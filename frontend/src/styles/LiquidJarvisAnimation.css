@@ -1,0 +1,362 @@
+/* Liquid Jarvis Animation - Ultra Glossy Liquid Effects */
+
+/* Container */
+.liquid-jarvis-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.liquid-bg-gradient {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle at center,
+            rgba(255, 105, 180, 0.03) 0%,
+            rgba(138, 43, 226, 0.05) 25%,
+            rgba(75, 0, 130, 0.04) 50%,
+            rgba(0, 191, 255, 0.03) 75%,
+            transparent 100%);
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: liquidBgPulse 8s ease-in-out infinite;
+}
+
+.liquid-ambient-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 400px;
+    background: conic-gradient(from 0deg,
+            rgba(255, 105, 180, 0.08) 0deg,
+            rgba(138, 43, 226, 0.06) 60deg,
+            rgba(75, 0, 130, 0.05) 120deg,
+            rgba(0, 191, 255, 0.07) 180deg,
+            rgba(255, 20, 147, 0.06) 240deg,
+            rgba(255, 105, 180, 0.08) 360deg);
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: liquidAmbientRotate 20s linear infinite;
+}
+
+@keyframes liquidBgPulse {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.3;
+    }
+}
+
+@keyframes liquidAmbientRotate {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Main Animation Container */
+.liquid-ai-animation {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 360px;
+    height: 360px;
+    z-index: 10;
+    max-width: 100%;
+    /* Basic responsiveness */
+}
+
+/* Main Liquid Orb - The Centerpiece */
+/* Main Liquid Orb - The Centerpiece */
+.liquid-main-orb {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    z-index: 20;
+    transform-style: preserve-3d;
+    filter: var(--orb-glow);
+    transition: all 0.5s ease;
+}
+
+/* NOTE: CSS Pulse animation removed here to allow JS modulation to work without conflict */
+
+/* Liquid Core - Multi-layered Gradient */
+.liquid-core {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.9) 0%, transparent 40%),
+        radial-gradient(ellipse at 70% 80%, rgba(255, 105, 180, 0.8) 0%, transparent 50%),
+        linear-gradient(135deg, #ff69b4 0%, #ff1493 15%, #8a2be2 35%, #9932cc 50%, #4b0082 65%, #00bfff 85%, #ff69b4 100%);
+    backdrop-filter: blur(1px);
+}
+
+.liquid-gradient-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    mix-blend-mode: overlay;
+}
+
+.layer-1 {
+    background: radial-gradient(circle at 40% 30%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 105, 180, 0.3) 30%, rgba(138, 43, 226, 0.2) 60%, transparent 80%);
+    animation: liquidLayer1 6s ease-in-out infinite;
+}
+
+.layer-2 {
+    background: radial-gradient(circle at 60% 70%, rgba(255, 20, 147, 0.5) 0%, rgba(138, 43, 226, 0.4) 40%, rgba(75, 0, 130, 0.3) 70%, transparent 90%);
+    animation: liquidLayer2 8s ease-in-out infinite reverse;
+}
+
+.layer-3 {
+    background: radial-gradient(circle at 20% 80%, rgba(0, 191, 255, 0.3) 0%, rgba(138, 43, 226, 0.2) 50%, transparent 80%);
+    animation: liquidLayer3 10s ease-in-out infinite;
+}
+
+@keyframes liquidLayer1 {
+
+    0%,
+    100% {
+        transform: rotate(0deg) scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: rotate(180deg) scale(1.1);
+        opacity: 0.6;
+    }
+}
+
+@keyframes liquidLayer2 {
+
+    0%,
+    100% {
+        transform: rotate(0deg) scale(1);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: rotate(-120deg) scale(0.9);
+        opacity: 0.9;
+    }
+}
+
+@keyframes liquidLayer3 {
+
+    0%,
+    100% {
+        transform: rotate(0deg) scale(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: rotate(240deg) scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+/* Liquid Shine - Main Highlight */
+.liquid-shine {
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 60px;
+    height: 80px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 30%, rgba(255, 255, 255, 0.3) 60%, transparent 100%);
+    border-radius: 50% 30% 60% 40%;
+    filter: blur(2px);
+    transform: rotate(-25deg);
+    z-index: 25;
+}
+
+/* Liquid Specular - Secondary Highlights */
+.liquid-specular {
+    position: absolute;
+    top: 60%;
+    right: 25%;
+    width: 25px;
+    height: 35px;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 105, 180, 0.4) 50%, transparent 100%);
+    border-radius: 70% 30% 60% 40%;
+    filter: blur(1px);
+    z-index: 24;
+}
+
+/* Liquid Waves - Flowing Concentric */
+.liquid-wave {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid transparent;
+    background: linear-gradient(45deg, rgba(255, 105, 180, 0.3), rgba(138, 43, 226, 0.25), rgba(75, 0, 130, 0.2), rgba(0, 191, 255, 0.25));
+    background-clip: border-box;
+    border-image: linear-gradient(45deg, rgba(255, 105, 180, 0.6), rgba(138, 43, 226, 0.5), rgba(75, 0, 130, 0.4), rgba(0, 191, 255, 0.5)) 1;
+    border-radius: 50%;
+    z-index: 8;
+    filter: blur(1px);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.liquid-jarvis-container.speaking .liquid-wave {
+    opacity: 1;
+    animation: wavePulse 2s infinite;
+}
+
+@keyframes wavePulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Liquid Pulse Rings */
+.liquid-pulse-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid;
+    border-image: linear-gradient(45deg, rgba(255, 105, 180, 0.5), rgba(138, 43, 226, 0.4), rgba(75, 0, 130, 0.3), rgba(0, 191, 255, 0.4), rgba(255, 105, 180, 0.5)) 1;
+    background: radial-gradient(circle, transparent 85%, rgba(255, 105, 180, 0.1) 90%, rgba(138, 43, 226, 0.08) 95%, transparent 100%);
+    border-radius: 50%;
+    z-index: 5;
+    filter: blur(1.5px);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.liquid-jarvis-container.listening .liquid-pulse-ring {
+    opacity: 1;
+    animation: ringPulse 2s infinite;
+}
+
+@keyframes ringPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.8);
+        opacity: 0;
+    }
+}
+
+.ring-1 {
+    animation-delay: 0s;
+}
+
+.ring-2 {
+    animation-delay: 0.4s;
+}
+
+.ring-3 {
+    animation-delay: 0.8s;
+}
+
+/* Glitter Effect */
+.liquid-glitter-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 400px;
+    z-index: 15;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.liquid-glitter-particle {
+    position: absolute;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 105, 180, 0.8) 25%, rgba(138, 43, 226, 0.7) 50%, rgba(0, 191, 255, 0.8) 75%, rgba(255, 255, 255, 0.9) 100%);
+    border-radius: 50%;
+    filter: blur(0.5px);
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 105, 180, 0.6), 0 0 18px rgba(138, 43, 226, 0.4);
+    animation: glitterFloat 4s ease-in-out infinite;
+}
+
+@keyframes glitterFloat {
+
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+        opacity: 0.8;
+    }
+
+    25% {
+        transform: translateY(-20px) rotate(90deg) scale(1.2);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-15px) rotate(180deg) scale(0.8);
+        opacity: 0.9;
+    }
+
+    75% {
+        transform: translateY(-25px) rotate(270deg) scale(1.1);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .liquid-jarvis-container {
+        padding: 20px;
+        min-height: 300px;
+    }
+
+    .liquid-ai-animation {
+        width: 280px;
+        height: 280px;
+    }
+
+    .liquid-main-orb {
+        width: 120px;
+        height: 120px;
+    }
+
+    .liquid-bg-gradient {
+        width: 100%;
+        height: 100%;
+    }
+}

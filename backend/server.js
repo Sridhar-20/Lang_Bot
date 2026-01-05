@@ -11,6 +11,46 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// database connection
+// database connection
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken'); // Added for manual token verification
+const authRoutes = require('./routes/auth');
+const PracticeSession = require('./models/PracticeSession'); // Added Persistence Model
+
+// Connect to MongoDB
+const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/languabot', {
+            // useNewUrlParser: true, // Deprecated in newer mongoose, but safe to remove usually
+            // useUnifiedTopology: true
+        });
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+    } catch (error) {
+        console.error(`Error: ${error.message}`);
+        // data mode? if db fails, maybe we still run? for now let's just log
+    }
+};
+
+// Only connect if URI is present (or default to local)
+// But to prevent crashing if user hasn't set it up yet, we'll wrap it
+if (process.env.MONGODB_URI) {
+    connectDB();
+} else {
+    console.log("⚠️ MONGODB_URI not found in .env. Auth features may not work.");
+}
+
+// Middleware to prevent hanging if DB is not connected
+app.use('/api/auth', (req, res, next) => {
+    // 0: disconnected, 1: connected, 2: connecting, 3: disconnecting
+    if (mongoose.connection.readyState !== 1) {
+        return res.status(503).json({ error: 'Service Unavailable: Database not connected. Please restart backend.' });
+    }
+    next();
+});
+
+app.use('/api/auth', authRoutes);
+
 // Helper to read data files
 const readData = (filename) => {
     const filePath = path.join(__dirname, 'data', filename);
@@ -506,118 +546,284 @@ function calculateGrammarMetrics(targetText, spokenText, duration, fillerWords, 
 
 // Mock submission endpoint - in a real app this would save to DB
 // Here we just return some analysis
+
+// Practice Submission Endpoint - Now Saves to DB
 app.post('/api/practice/submit', async (req, res) => {
     const { type, transcript, duration, fillerWords, repeatingWords, wordCount, wpm } = req.body;
     
-    console.log("DEBUG: Submit Body:", JSON.stringify(req.body, null, 2)); // Debug log
+    // 1. Authenticate User (Manual Check)
+    let userId = null;
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (token) {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            userId = decoded.id;
+        }
+    } catch (err) {
+        console.log("Submit: Guest user or invalid token");
+    }
 
     if (!API_KEY) {
         return res.status(500).json({ error: 'Server misconfigured: Missing API Key' });
     }
 
     try {
-        // Calculate Grammar-specific metrics if practice type is 'grammar'
-        let grammarMetrics = null;
-        if (type === 'grammar' && req.body.question?.text) {
-            console.log("DEBUG: Calculating grammar metrics...");
-            grammarMetrics = calculateGrammarMetrics(
-                req.body.question.text,
-                transcript,
-                duration,
-                fillerWords || [],
-                repeatingWords || []
-            );
-            console.log("DEBUG: Calculated Metrics:", grammarMetrics);
+        let results;
+
+        // Handle Audio/Text Analysis (Grammar, Topic, Interview)
+        if (['grammar', 'topic', 'interview', 'speaking'].includes(type)) {
+             // Calculate Grammar-specific metrics if practice type is 'grammar'
+            let grammarMetrics = null;
+            if (type === 'grammar' && req.body.question?.text) {
+                 grammarMetrics = calculateGrammarMetrics(
+                    req.body.question.text,
+                    transcript,
+                    duration,
+                    fillerWords || [],
+                    repeatingWords || []
+                );
+            }
+    
+            const prompt = `
+            You are an expert English language coach analyzing a spoken practice session. Provide comprehensive feedback in a single response.
+            TRANSCRIPT: "${transcript}"
+            AUDIO METRICS:
+            - Duration: ${duration} seconds
+            - Total words: ${wordCount || 'N/A'}
+            - Speaking speed: ${wpm || 'N/A'} WPM (words per minute)
+            - Filler words detected: ${JSON.stringify(fillerWords || [])}
+            - Repeated words: ${JSON.stringify(repeatingWords || [])}
+            TASK: Analyze the transcript and provide detailed feedback in the following JSON format:
+            {
+              "grammarErrors": [{ "original": "...", "corrected": "...", "rule": "...", "severity": "..." }],
+              "pronunciationTips": ["...", "..."],
+              "fluencyScore": 0-100,
+              "fluencyBreakdown": { "grammar": 0-100, "vocabulary": 0-100, "coherence": 0-100, "speed": 0-100, "fillerWordImpact": 0-100 },
+              "vocabularyLevel": "beginner/intermediate/advanced",
+              "strengths": ["..."],
+              "improvements": ["..."],
+              "overallFeedback": "..."
+            }
+            GUIDELINES: Return ONLY valid JSON, no markdown.
+            `;
+    
+            // Use flash for faster feedback
+            const text = await callGemini("gemini-2.5-flash", prompt);
+            const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
+            const analysis = JSON.parse(jsonStr);
+    
+            results = {
+                ...analysis,
+                overallScore: analysis.fluencyScore, // Use fluencyScore as main score
+                grammarAccuracy: analysis.fluencyBreakdown.grammar,
+                fluency: analysis.fluencyBreakdown.speed,
+                coherence: analysis.fluencyBreakdown.coherence,
+                vocabulary: analysis.fluencyBreakdown.vocabulary,
+                message: analysis.overallFeedback,
+                createdAt: new Date(),
+                ...(grammarMetrics && { grammarMetrics })
+            };
+        } 
+        // Handle Quiz-based Practice (Listening, Reading)
+        else if (['listening', 'reading'].includes(type)) {
+            const { score, totalQuestions, topic } = req.body;
+            const percentage = Math.round((score / totalQuestions) * 100);
+            
+            results = {
+                overallScore: percentage, // Direct score from quiz
+                message: `You answered ${score} out of ${totalQuestions} questions correctly. Keep practicing to improve comprehension!`,
+                createdAt: new Date(),
+                details: req.body // Save full details
+            };
         } else {
-            console.log("DEBUG: Skipping metrics. Type:", type, "Question present:", !!req.body.question);
+             return res.status(400).json({ error: 'Invalid practice type' });
         }
 
-        const prompt = `
-You are an expert English language coach analyzing a spoken practice session. Provide comprehensive feedback in a single response.
-
-TRANSCRIPT: "${transcript}"
-
-AUDIO METRICS:
-- Duration: ${duration} seconds
-- Total words: ${wordCount || 'N/A'}
-- Speaking speed: ${wpm || 'N/A'} WPM (words per minute)
-- Filler words detected: ${JSON.stringify(fillerWords || [])}
-- Repeated words: ${JSON.stringify(repeatingWords || [])}
-
-TASK: Analyze the transcript and provide detailed feedback in the following JSON format:
-
-{
-  "grammarErrors": [
-    {
-      "original": "exact text with error from transcript",
-      "corrected": "grammatically correct version",
-      "rule": "brief explanation of grammar rule violated",
-      "severity": "minor/moderate/major"
-    }
-  ],
-  "pronunciationTips": [
-    "Specific pronunciation advice based on common errors in the transcript",
-    "Focus on words that are commonly mispronounced"
-  ],
-  "fluencyScore": 0-100,
-  "fluencyBreakdown": {
-    "grammar": 0-100,
-    "vocabulary": 0-100,
-    "coherence": 0-100,
-    "speed": 0-100,
-    "fillerWordImpact": 0-100
-  },
-  "vocabularyLevel": "beginner/intermediate/advanced",
-  "vocabularyRichness": 0-100,
-  "sentenceComplexity": "simple/moderate/complex",
-  "strengths": [
-    "Specific positive aspect 1",
-    "Specific positive aspect 2"
-  ],
-  "improvements": [
-    "Actionable improvement 1",
-    "Actionable improvement 2"
-  ],
-  "overallFeedback": "2-3 encouraging sentences summarizing performance and next steps"
-}
-
-GUIDELINES:
-- Be constructive and encouraging
-- Provide specific, actionable feedback
-- Consider the speaking speed (ideal: 130-160 WPM for fluent English)
-- Account for filler words in fluency scoring
-- Grammar errors should be realistic (don't over-correct casual speech)
-- Pronunciation tips should be based on actual words in the transcript
-- Return ONLY valid JSON, no markdown formatting
-`;
-
-        // Use flash for faster feedback
-        const text = await callGemini("gemini-2.5-flash", prompt);
-        
-        // Clean up the response if it contains markdown code blocks
-        const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
-        const analysis = JSON.parse(jsonStr);
-
-        const results = {
-            ...analysis,
-            overallScore: analysis.fluencyScore,
-            // Map breakdown to top-level keys for backward compatibility/easier access
-            grammarAccuracy: analysis.fluencyBreakdown.grammar,
-            pronunciation: analysis.fluencyBreakdown.speed, 
-            fluency: analysis.fluencyBreakdown.speed, 
-            coherence: analysis.fluencyBreakdown.coherence,
-            vocabulary: analysis.fluencyBreakdown.vocabulary,
-            engagement: analysis.fluencyBreakdown.coherence, 
-            feedback: analysis.overallFeedback,
-            // Add grammar-specific metrics if available
-            ...(grammarMetrics && { grammarMetrics })
-        };
+        // 2. Save to MongoDB if User is Authenticated
+        if (userId) {
+            try {
+                const session = new PracticeSession({
+                    user: userId,
+                    type: type,
+                    topic: req.body.topic || req.body.question?.text || 'Practice Session',
+                    score: results.overallScore,
+                    duration: duration || 0,
+                    details: {
+                        ...results,
+                        transcript,
+                        grammarMetrics: results.grammarMetrics
+                    }
+                });
+                await session.save();
+                console.log(`✅ Practice Session (${type}) saved for user ${userId}`);
+            } catch (dbError) {
+                console.error("❌ Failed to save session to DB:", dbError.message);
+            }
+        }
 
         res.json(results);
 
     } catch (error) {
         console.error('Error generating feedback:', error);
         res.status(500).json({ error: 'Failed to generate feedback' });
+    }
+});
+
+// Listening Practice Generation Endpoint
+app.post('/api/listening/generate', async (req, res) => {
+    const { type = 'conversation', difficulty = 'intermediate', topic } = req.body;
+    
+    // Validate inputs
+    if (!['conversation', 'story'].includes(type)) {
+        return res.status(400).json({ error: "Invalid type. Use 'conversation' or 'story'." });
+    }
+
+    if (!API_KEY) {
+        return res.status(500).json({ error: 'Server misconfigured: Missing API Key' });
+    }
+
+    try {
+        console.log(`🎧 Generating listening content (Type: ${type})...`);
+        
+        let prompt = "";
+        
+        if (type === 'conversation') {
+            prompt = `Generate a realistic English conversation script for listening practice.
+            Context: ${topic || 'General everyday situation'}
+            Difficulty: ${difficulty} (CEFR B1-B2 level)
+            Length: 40-60 seconds spoken (strictly 80-100 words - KEEP IT SHORT)
+            Format: A dialogue between 2-3 people.
+            
+            Also generate 5-8 multiple-choice or short-answer comprehension questions based on this conversation.
+            
+            Return ONLY a valid JSON object with this structure:
+            {
+                "type": "conversation",
+                "title": "Creative Title Here",
+                "script": [
+                    { "speaker": "Name", "text": "Line of dialogue" },
+                    ...
+                ],
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "Question text?",
+                        "options": ["Option A", "Option B", "Option C", "Option D"],
+                        "answer": "Correct Option text",
+                        "explanation": "Brief explanation of why this is correct"
+                    }
+                ]
+            }
+            Do not use markdown formatting.`;
+        } else {
+            prompt = `Generate a short English story or article for reading/listening practice.
+            Topic: ${topic || 'Interesting general knowledge or fiction'}
+            Difficulty: ${difficulty} (CEFR B1-B2 level)
+            Length: 40-60 seconds read (strictly 80-100 words - KEEP IT SHORT)
+            
+            Also generate 5-8 comprehension questions.
+            
+            Return ONLY a valid JSON object with this structure:
+            {
+                "type": "story",
+                "title": "Creative Title Here",
+                "content": "Full text of the story/article...",
+                "questions": [
+                    {
+                        "id": 1,
+                        "question": "Question text?",
+                        "options": ["Option A", "Option B", "Option C", "Option D"],
+                        "answer": "Correct Option text",
+                        "explanation": "Brief explanation"
+                    }
+                ]
+            }
+            Do not use markdown formatting.`;
+        }
+
+        const generateWithModel = async (modelName) => {
+            console.log(`🤖 Attempting generation with ${modelName}...`);
+            const responseText = await callGemini(modelName, prompt);
+            
+            // Robust JSON Extraction
+            let jsonStr = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+            
+            // Should start with { and end with }
+            const startIndex = jsonStr.indexOf('{');
+            const endIndex = jsonStr.lastIndexOf('}');
+            
+            if (startIndex !== -1 && endIndex !== -1) {
+                jsonStr = jsonStr.substring(startIndex, endIndex + 1);
+            } else {
+                 console.warn("⚠️ Could not find outer braces in response, trying raw parse.");
+            }
+
+            try {
+                const parsed = JSON.parse(jsonStr);
+                return parsed;
+            } catch (parseError) {
+                console.error(`❌ JSON Parse Error (${modelName}):`, parseError.message);
+                console.error("RAW EXTRACTED:", jsonStr);
+                throw new Error(`Failed to parse response from ${modelName}`);
+            }
+        };
+
+        let data;
+        try {
+            data = await generateWithModel("gemini-2.5-flash");
+        } catch (flashError) {
+            console.warn(`⚠️ gemini-2.5-flash failed: ${flashError.message}. Retrying with gemini-2.5-pro...`);
+            try {
+                data = await generateWithModel("gemini-2.5-pro");
+            } catch (proError) {
+                console.error(`❌ Both models failed.`);
+                throw new Error(`Generation failed: ${proError.message}`);
+            }
+        }
+
+        res.json(data);
+
+    } catch (error) {
+        console.error('🔴 Error generating listening content:', error.message);
+        res.status(500).json({ error: error.message || 'Failed to generate content' });
+    }
+});
+
+// Practice History Endpoint
+app.get('/api/practice/history', async (req, res) => {
+    try {
+        // 1. Authenticate User
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        // 2. Fetch Sessions
+        const sessions = await PracticeSession.find({ user: userId })
+            .sort({ createdAt: -1 })
+            .limit(50); // Limit to last 50 sessions
+
+        // 3. Transform Data for Frontend
+        const history = sessions.map(session => ({
+            id: session._id,
+            type: session.type === 'topic' ? 'Topic Practice' : 
+                  session.type === 'grammar' ? 'Grammar Practice' :
+                  session.type === 'interview' ? 'Interview Practice' :
+                  session.type === 'listening' ? 'Listening Practice' :
+                  'AI Interviewer',
+            topic: session.topic,
+            score: session.score,
+            date: session.createdAt,
+            duration: session.duration
+        }));
+
+        res.json(history);
+    } catch (error) {
+        console.error('Error fetching history:', error);
+        res.status(500).json({ error: 'Failed to fetch history' });
     }
 });
 

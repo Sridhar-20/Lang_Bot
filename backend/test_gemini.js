@@ -1,33 +1,52 @@
-require('dotenv').config();
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-// Use env var or fallback to the hardcoded one for now to test if it's valid
-const API_KEY = process.env.GEMINI_API_KEY || "AIzaSyDxX8Kbm85r9DYd4kNwVgl5OuDiqT836sc";
+const API_KEY = process.env.GEMINI_API_KEY;
 
-const genAI = new GoogleGenerativeAI(API_KEY);
+if (!API_KEY) {
+    console.error("❌ No GEMINI_API_KEY found in .env");
+    process.exit(1);
+}
 
-async function testModel(modelName) {
-    console.log(`\nTesting ${modelName}...`);
+console.log(`🔑 Key found: ${API_KEY.substring(0, 4)}... (Length: ${API_KEY.length})`);
+
+async function testGemini() {
+    const modelName = "gemini-2.5-flash";
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
+    
+    console.log(`🌐 Calling URL: ${url.replace(API_KEY, 'HIDDEN_KEY')}`);
+
+    const prompt = "Generate a JSON object with a 'message' field saying 'Hello World'. Do not use markdown.";
+
     try {
-        const model = genAI.getGenerativeModel({ model: modelName });
-        const result = await model.generateContent("Say hello");
-        const response = await result.response;
-        console.log(`${modelName} Response:`, response.text());
-        return true;
-    } catch (err) {
-        console.error(`${modelName} Error Message:`, err.message);
-        if (err.response) {
-            console.error(`${modelName} Error Response:`, JSON.stringify(err.response, null, 2));
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
+        });
+
+        console.log(`📡 Status: ${response.status} ${response.statusText}`);
+
+        const text = await response.text();
+        console.log("📄 Raw Response Body:");
+        console.log(text.substring(0, 500)); // Print first 500 chars
+
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
         }
-        return false;
+
+        const data = JSON.parse(text);
+        const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        console.log("\n✅ Success! Content:");
+        console.log(content);
+
+    } catch (error) {
+        console.error("\n🔴 Test Failed:");
+        console.error(error);
     }
 }
 
-async function runTests() {
-    console.log("Starting Gemini API Tests...");
-    console.log("API Key length:", API_KEY ? API_KEY.length : 0);
-
-    await testModel("models/gemini-2.5-flash");
-}
-
-runTests();
+testGemini();

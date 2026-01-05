@@ -1,0 +1,67 @@
+/* Segmented Control Styles */
+.segmented-control-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 6px;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    isolation: isolate;
+}
+
+[data-theme='light'] .segmented-control-container {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+.segmented-control-pill {
+    position: absolute;
+    height: calc(100% - 12px);
+    top: 6px;
+    background: var(--accent-primary);
+    border-radius: 9999px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+.segmented-control-pill.pressed {
+    transform: scale(0.98);
+    transition-duration: 150ms;
+}
+
+.segmented-control-button {
+    position: relative;
+    z-index: 10;
+    padding: 10px 24px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    transition: all 0.3s ease;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-secondary);
+    outline: none;
+    white-space: nowrap;
+}
+
+.segmented-control-button.active {
+    color: #ffffff;
+}
+
+.segmented-control-label {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.segmented-control-button.active .segmented-control-label {
+    transform: scale(1.05);
+}
+
+.segmented-control-button:hover:not(.active) {
+    color: var(--text-primary);
+}

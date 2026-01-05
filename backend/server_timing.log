@@ -22,3 +22,61 @@
 [2025-11-27T10:08:41.591Z] Model: gemini-2.5-flash | Duration: 16742ms
 [2025-11-27T10:09:10.556Z] Model: gemini-2.5-flash | Duration: 23423ms
 [2025-11-27T10:09:56.581Z] Model: gemini-2.5-pro | Duration: 46022ms
+[2025-11-27T10:26:59.247Z] Model: gemini-2.5-flash | Duration: 23318ms
+[2026-01-04T09:21:10.724Z] Model: gemini-2.5-flash | Duration: 5899ms
+[2026-01-04T09:21:10.859Z] Model: gemini-2.5-pro | Duration: 127ms
+[2026-01-04T09:21:10.860Z] ERROR Model: gemini-2.5-pro | Duration: 128ms | Error: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.5-pro
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.5-pro
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.5-pro
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.5-pro
+Please retry in 50.299664387s.
+[2026-01-04T10:05:44.491Z] Model: gemini-2.5-flash | Duration: 5289ms
+[2026-01-04T10:05:44.750Z] Model: gemini-2.5-pro | Duration: 256ms
+[2026-01-04T10:05:44.751Z] ERROR Model: gemini-2.5-pro | Duration: 257ms | Error: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.5-pro
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.5-pro
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.5-pro
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.5-pro
+Please retry in 16.416718848s.
+[2026-01-04T10:53:11.142Z] Model: gemini-2.5-flash | Duration: 9981ms
+[2026-01-04T12:44:01.039Z] Model: gemini-2.5-flash | Duration: 10324ms
+[2026-01-04T12:52:47.038Z] Model: gemini-2.5-flash | Duration: 12874ms
+[2026-01-04T12:52:47.455Z] Model: gemini-2.5-flash | Duration: 13181ms
+[2026-01-04T13:03:49.118Z] Model: gemini-2.5-flash | Duration: 12466ms
+[2026-01-04T13:06:06.028Z] Model: gemini-2.5-flash | Duration: 11504ms
+[2026-01-04T13:14:57.775Z] Model: gemini-2.5-flash | Duration: 11133ms
+[2026-01-04T13:15:00.362Z] Model: gemini-2.5-flash | Duration: 13620ms
+[2026-01-04T13:17:03.370Z] Model: gemini-2.5-flash | Duration: 8529ms
+[2026-01-05T14:19:13.297Z] Model: gemini-2.5-flash | Duration: 518ms
+[2026-01-05T14:19:13.299Z] ERROR Model: gemini-2.5-flash | Duration: 520ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:19:13.308Z] Model: gemini-2.5-flash | Duration: 291ms
+[2026-01-05T14:19:13.310Z] ERROR Model: gemini-2.5-flash | Duration: 293ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:19:13.434Z] Model: gemini-2.5-pro | Duration: 132ms
+[2026-01-05T14:19:13.435Z] ERROR Model: gemini-2.5-pro | Duration: 133ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:19:13.445Z] Model: gemini-2.5-pro | Duration: 131ms
+[2026-01-05T14:19:13.446Z] ERROR Model: gemini-2.5-pro | Duration: 132ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:19:43.553Z] Model: gemini-2.5-flash | Duration: 187ms
+[2026-01-05T14:19:43.557Z] ERROR Model: gemini-2.5-flash | Duration: 191ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:50:35.346Z] Model: gemini-2.5-flash | Duration: 421ms
+[2026-01-05T14:50:35.347Z] ERROR Model: gemini-2.5-flash | Duration: 422ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:50:35.355Z] Model: gemini-2.5-flash | Duration: 386ms
+[2026-01-05T14:50:35.356Z] ERROR Model: gemini-2.5-flash | Duration: 387ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:50:35.428Z] Model: gemini-2.5-pro | Duration: 77ms
+[2026-01-05T14:50:35.428Z] ERROR Model: gemini-2.5-pro | Duration: 77ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:50:35.453Z] Model: gemini-2.5-pro | Duration: 94ms
+[2026-01-05T14:50:35.454Z] ERROR Model: gemini-2.5-pro | Duration: 95ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:50:38.129Z] Model: gemini-2.5-flash | Duration: 78ms
+[2026-01-05T14:50:38.130Z] ERROR Model: gemini-2.5-flash | Duration: 79ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:50:38.304Z] Model: gemini-2.5-pro | Duration: 170ms
+[2026-01-05T14:50:38.305Z] ERROR Model: gemini-2.5-pro | Duration: 171ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:50:42.323Z] Model: gemini-2.5-flash | Duration: 80ms
+[2026-01-05T14:50:42.324Z] ERROR Model: gemini-2.5-flash | Duration: 81ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:50:42.491Z] Model: gemini-2.5-pro | Duration: 165ms
+[2026-01-05T14:50:42.491Z] ERROR Model: gemini-2.5-pro | Duration: 165ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:51:06.307Z] Model: gemini-2.5-flash | Duration: 209ms
+[2026-01-05T14:51:06.308Z] ERROR Model: gemini-2.5-flash | Duration: 210ms | Error: API key not valid. Please pass a valid API key.
+[2026-01-05T14:52:50.338Z] Model: gemini-2.5-flash | Duration: 17995ms
+[2026-01-05T14:52:54.554Z] Model: gemini-2.5-flash | Duration: 20686ms
+[2026-01-05T14:56:06.196Z] Model: gemini-2.5-flash | Duration: 9929ms
+[2026-01-05T15:51:04.729Z] Model: gemini-2.5-flash | Duration: 10473ms

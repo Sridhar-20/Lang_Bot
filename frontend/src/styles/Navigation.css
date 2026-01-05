@@ -1,0 +1,402 @@
+/* Floating Container Wrapper */
+.navbar-floating-wrapper {
+    position: fixed;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    pointer-events: none;
+    /* Allow clicks through the wrapper area */
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+/* The Pill Itself */
+.navbar-pill {
+    pointer-events: auto;
+    /* Re-enable clicks on the bar */
+    background: #0a0a0a;
+    /* Dark Charcoal / Black */
+    /* Alternative if user wants varying dark: rgba(15, 23, 42, 0.95) */
+    /* backdrop-filter: blur(12px); <-- Removed for scroll performance */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    /* Max capsule shape */
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.03);
+    min-width: 320px;
+    max-width: 1200px;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform, background-color;
+    transform: translateZ(0);
+    /* Force GPU */
+    backface-visibility: hidden;
+}
+
+.navbar-pill.scrolled {
+    transform: scale(0.92) translateY(-2px);
+    /* Scale down and nudge up slightly */
+    background: rgba(10, 10, 10, 0.95);
+    /* Increased opacity since blur is gone */
+    border-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    /* tighter shadow */
+}
+
+[data-theme='light'] .navbar-pill.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* Left Section: Logo */
+.nav-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #fff;
+    padding-left: 8px;
+}
+
+
+
+.logo-text {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-size: 1.1rem;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #333333 0%, #000000 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Center Section: Links */
+.nav-center {
+    display: flex;
+    align-items: center;
+    /* Tighter spacing for pill look */
+}
+
+/* Pill Links */
+.pill-link {
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 500;
+    font-size: 0.92rem;
+    padding: 8px 16px;
+    border-radius: 99px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pill-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    /* White glass hover */
+}
+
+.pill-link.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Right Section: Actions */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-right: 4px;
+}
+
+/* CTA Button */
+.cta-button {
+    background: #fff;
+    color: #000;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 8px 20px;
+    border-radius: 99px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cta-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+    background: #f0f0f0;
+}
+
+/* Theme Toggle Pill Style */
+.theme-toggle-pill {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle-pill:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Dropdown specific for pill */
+.nav-item-dropdown {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.pill-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    /* Spacing from pill */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0a0a0a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 8px;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+
+.pill-dropdown-link {
+    padding: 10px 16px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    display: block;
+    text-align: center;
+    /* Center align in dropdown or left? Usually left is better for lists */
+    text-align: left;
+}
+
+.pill-dropdown-link:hover,
+.pill-dropdown-link.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* Mobile Adjustments */
+.mobile-menu-btn {
+    display: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+/* Floating Mobile Menu */
+.mobile-menu-floating {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    /* Align to right side */
+    width: 280px;
+    background: #0a0a0a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+.mobile-link {
+    display: block;
+    padding: 12px 16px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.mobile-link.indented {
+    margin-left: 12px;
+    background: transparent;
+    font-size: 0.9em;
+    padding: 10px 16px;
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0 12px 12px 0;
+}
+
+.mobile-group-header {
+    padding: 8px 16px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+/* Responsive Queries */
+@media (max-width: 900px) {
+    .nav-center.desktop-only {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .cta-button {
+        display: none;
+        /* Hide CTA on mobile to save space, or keep simpler icon */
+    }
+
+    .navbar-pill {
+        padding: 8px 20px;
+        /* Less padding on mobile */
+        width: calc(100% - 40px);
+        /* Fill width minus margins */
+        justify-content: space-between;
+    }
+
+    .logo-text {
+        display: block;
+        /* Keep text or hide? Let's keep for branding */
+    }
+}
+
+/* Light Theme Overrides */
+[data-theme='light'] .navbar-pill {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    /* Softer border */
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(0, 0, 0, 0.02);
+}
+
+[data-theme='light'] .logo-text {
+    color: var(--text-primary);
+}
+
+[data-theme='light'] .logo-icon {
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    border: none;
+}
+
+[data-theme='light'] .pill-link {
+    color: var(--text-secondary);
+}
+
+[data-theme='light'] .pill-link:hover {
+    color: var(--accent-primary);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='light'] .pill-link.active {
+    color: var(--accent-primary);
+    background: rgba(37, 99, 235, 0.1);
+    box-shadow: none;
+}
+
+[data-theme='light'] .pill-dropdown-menu {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='light'] .pill-dropdown-link {
+    color: var(--text-secondary);
+}
+
+[data-theme='light'] .pill-dropdown-link:hover,
+[data-theme='light'] .pill-dropdown-link.active {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--accent-primary);
+}
+
+[data-theme='light'] .theme-toggle-pill {
+    background: rgba(0, 0, 0, 0.05);
+    /* Soft gray */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: var(--text-secondary);
+}
+
+[data-theme='light'] .theme-toggle-pill:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--accent-primary);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .cta-button {
+    background: var(--accent-primary);
+    color: white;
+}
+
+[data-theme='light'] .cta-button:hover {
+    background: var(--accent-secondary);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+[data-theme='light'] .mobile-menu-btn {
+    color: var(--text-primary);
+}
+
+[data-theme='light'] .mobile-menu-floating {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='light'] .mobile-link {
+    color: var(--text-primary);
+    background: var(--bg-primary);
+}
+
+[data-theme='light'] .mobile-link.indented {
+    background: transparent;
+    border-left: 2px solid var(--border-color);
+}
+
+[data-theme='light'] .mobile-group-header {
+    color: var(--text-secondary);
+}

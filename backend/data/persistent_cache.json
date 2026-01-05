@@ -1,19 +1,52 @@
 {
-  "topicCache": [],
+  "topicCache": [
+    {
+      "id": 10,
+      "text": "Describe a significant failure you've experienced. How did it shape your perspective and contribute to your personal growth?"
+    },
+    {
+      "id": 11,
+      "text": "What daily practices or philosophical approaches do you believe are most effective in cultivating genuine happiness and well-being?"
+    },
+    {
+      "id": 12,
+      "text": "How crucial is empathy in personal relationships and professional environments, and what are practical ways to develop it?"
+    },
+    {
+      "id": 13,
+      "text": "How can tourism be both a force for economic development and a threat to local cultures, and what strategies can mitigate negative impacts?"
+    },
+    {
+      "id": 14,
+      "text": "What elements make a place truly feel like 'home,' regardless of where you were born, and how does this concept evolve over time?"
+    },
+    {
+      "id": 15,
+      "text": "What are the most significant advantages and challenges of living in a country or culture different from your own, and how does it change you?"
+    },
+    {
+      "id": 16,
+      "text": "In what profound ways does traveling to diverse places challenge one's preconceived notions and broaden their worldview?"
+    },
+    {
+      "id": 17,
+      "text": "If you had the power to invent a new global holiday, what would its purpose be, how would it be celebrated, and what impact would you hope it would have?"
+    },
+    {
+      "id": 18,
+      "text": "If you could witness or alter one historical event, which would it be, and what do you imagine the ripple effects of your involvement might be?"
+    },
+    {
+      "id": 19,
+      "text": "Should humanity discover intelligent extraterrestrial life, what do you predict would be the most immediate and long-term implications for human society, religion, and science?"
+    },
+    {
+      "id": 20,
+      "text": "Which invention from science fiction would you most like to see become a reality (e.g., teleportation, universal translator, time machine), and what societal shifts would it bring?"
+    }
+  ],
   "grammarCache": {
     "basic": [
-      {
-        "id": 1,
-        "text": "I like apples."
-      },
-      {
-        "id": 2,
-        "text": "She drinks water."
-      },
-      {
-        "id": 3,
-        "text": "We play outside."
-      },
       {
         "id": 4,
         "text": "He reads a book."
@@ -165,191 +198,171 @@
     ],
     "intermediate": [
       {
+        "id": 40,
+        "text": "As the sun is slowly setting, the entire sky is transforming into a breathtaking palette of vibrant colors."
+      },
+      {
         "id": 1,
-        "text": "The early morning mist often shrouds the valley, creating a picturesque but somewhat eerie scene."
+        "text": "The old house stood empty for years, but now a new family lives there and they seem very happy."
       },
       {
         "id": 2,
-        "text": "She finished her report punctually, and then she submitted it to her supervisor before the deadline."
+        "text": "We are currently planning our summer vacation, and we will probably visit Italy or Greece."
       },
       {
         "id": 3,
-        "text": "They have been diligently practicing their presentation skills for several weeks now, hoping to impress the board."
+        "text": "She has already finished her extensive report, so she can relax and enjoy the evening."
       },
       {
         "id": 4,
-        "text": "If the weather improves significantly by afternoon, we will definitely go for a long walk along the beach."
+        "text": "If you study consistently and review your notes, you will definitely pass the upcoming exam."
       },
       {
         "id": 5,
-        "text": "He had already left the office when I arrived, so I couldn't discuss the new project with him."
+        "text": "While I was walking to work this morning, I suddenly remembered my forgotten keys at home."
       },
       {
         "id": 6,
-        "text": "While the chef is preparing the main course, the waitstaff are carefully arranging the tables for the evening rush."
+        "text": "He is going to start a new challenging job next month, and he feels incredibly excited about it."
       },
       {
         "id": 7,
-        "text": "By this time next year, I will have completed my master's degree and started my new career."
+        "text": "They have been working diligently on this complex project since early morning, and they still haven't taken a proper break."
       },
       {
         "id": 8,
-        "text": "The old library smells of aged paper and dust, yet it remains a popular quiet study spot for many students."
+        "text": "The new bridge is being built very quickly, and it should be finished by next year's spring."
       },
       {
         "id": 9,
-        "text": "She was watching a fascinating documentary when her phone suddenly rang, interrupting her concentration."
+        "text": "Although the weather was unexpectedly terrible, we still went hiking in the mountains, and we actually had a lot of fun."
       },
       {
         "id": 10,
-        "text": "Many scientists have discovered innovative solutions to environmental challenges over the past decade."
+        "text": "Before she moved to Paris for her studies, she had never experienced such vibrant and diverse city life."
       },
       {
         "id": 11,
-        "text": "The team worked tirelessly all night, but they still couldn't fix the unexpected software bug."
+        "text": "I could definitely help you with your advanced homework if you explain precisely what parts you don't understand."
       },
       {
         "id": 12,
-        "text": "This time tomorrow, we will be flying over the Atlantic Ocean, heading towards our long-awaited vacation."
+        "text": "This time next week, we will be flying high over the Atlantic Ocean on our way to London for a conference."
       },
       {
         "id": 13,
-        "text": "Although he usually prefers to work alone, he sometimes collaborates with colleagues on larger assignments."
+        "text": "If I had significantly more free time during the week, I would enthusiastically learn to play a new musical instrument like the guitar."
       },
       {
         "id": 14,
-        "text": "They had been living in that small village for twenty years before they decided to move to the city."
+        "text": "The ancient Roman ruins were discovered by dedicated archaeologists last century, and they are now a very popular tourist attraction."
       },
       {
         "id": 15,
-        "text": "I have visited several European countries, and I have always enjoyed immersing myself in local cultures."
+        "text": "The express train usually arrives punctually on time, but today it might be slightly delayed due to the unexpected heavy snow."
       },
       {
         "id": 16,
-        "text": "After she finally found her lost keys, she realized they had been in her coat pocket all along."
+        "text": "He tried his absolute best to open the stubbornly sealed jar, yet it remained frustratingly impenetrable."
       },
       {
         "id": 17,
-        "text": "We will leave early tomorrow morning, or we will miss the first train to the capital city."
+        "text": "The woman who is standing elegantly near the window and smiling warmly is my beloved aunt, visiting from Canada."
       },
       {
         "id": 18,
-        "text": "Because the traffic is unusually heavy today, I am currently stuck in a massive jam on the highway."
+        "text": "My brother generally prefers a hot cup of tea, but yesterday he drank coffee because there was absolutely no tea left."
       },
       {
         "id": 19,
-        "text": "He was listening intently to the radio broadcast, and his dog was sleeping peacefully by his feet."
+        "text": "By the time you eventually arrive home, I will have already cooked a delicious dinner and set the entire dining table."
       },
       {
         "id": 20,
-        "text": "Some people enjoy the hustle and bustle of city life, but others prefer the tranquility of the countryside."
+        "text": "They had been waiting impatiently for over an hour when the bus finally arrived at the station, much to their relief."
       },
       {
         "id": 21,
-        "text": "By next month, she will have been teaching at this university for fifteen years, quite an achievement."
+        "text": "She decided to stay home for the entire weekend, for she was feeling quite unwell and needed proper rest."
       },
       {
         "id": 22,
-        "text": "Since it started raining this morning, the children have been playing board games indoors."
+        "text": "If he had truly listened carefully to my practical advice, he wouldn't have made that easily avoidable mistake."
       },
       {
         "id": 23,
-        "text": "The ancient ruins stood majestically on the hill, where they had witnessed centuries of history unfold."
+        "text": "The new company policy has been officially announced by the management, and all employees are currently discussing its implications."
       },
       {
         "id": 24,
-        "text": "If you don't hurry up, you will definitely be late for your appointment with the dentist."
+        "text": "We went to the local library to seriously study for our exams, but we ended up chatting for an hour instead."
       },
       {
         "id": 25,
-        "text": "The concert had already begun, so we had to find our seats very quietly in the dark."
+        "text": "Although he usually works remotely from home, today he is attending an important business conference downtown."
       },
       {
         "id": 26,
-        "text": "My neighbor is currently planting new flowers in her garden, and her children are helping her."
+        "text": "She politely asked me if I knew where the nearest post office was located and how to get there."
       },
       {
         "id": 27,
-        "text": "While I am working on my project tonight, my roommate will be studying for his final exams."
+        "text": "You can either come with us to the cinema to watch the new blockbuster, or you can stay home and watch a movie there."
       },
       {
         "id": 28,
-        "text": "Whenever he feels stressed, he usually goes for a long run to clear his mind."
+        "text": "Learning a new and complex language requires significant dedication and consistent practice over time."
       },
       {
         "id": 29,
-        "text": "They had been discussing the proposal for hours, yet they still hadn't reached a unanimous decision."
+        "text": "I haven't seen Mark since last week; he should have called by now to update me on his progress."
       },
       {
         "id": 30,
-        "text": "Although I have read that novel twice, I still find new details and interpretations every time."
+        "text": "We will officially start the crucial meeting once everyone has safely arrived and settled down."
       },
       {
         "id": 31,
-        "text": "The power went out unexpectedly, so everyone grabbed their flashlights and candles."
+        "text": "The old broken-down car that broke down on the busy highway belonged to my rather unfortunate neighbor."
       },
       {
         "id": 32,
-        "text": "You can borrow my umbrella if you think it will rain later this afternoon."
+        "text": "The comprehensive results of the groundbreaking experiment will be published in a prestigious scientific journal next month."
       },
       {
         "id": 33,
-        "text": "She is learning Spanish online, and her brother is practicing his guitar in the next room."
+        "text": "Since I moved to this vibrant city, I have made many wonderful new friends, and I feel very happy and settled here."
       },
       {
         "id": 34,
-        "text": "The company had already launched the new product when the competitor announced a similar innovation."
+        "text": "You must submit your detailed assignment by Friday afternoon, or you will certainly receive a penalty for lateness."
       },
       {
         "id": 35,
-        "text": "The museum curator often explains the intricate history behind each artifact to curious visitors."
+        "text": "They are meeting their new potential clients next Tuesday morning to discuss future collaboration opportunities."
       },
       {
         "id": 36,
-        "text": "By the time you arrive, I will have been waiting for over an hour, so please try to be punctual."
+        "text": "The popular coffee shop was completely full and bustling, so we decided to go to another, less crowded one."
       },
       {
         "id": 37,
-        "text": "I have been studying English for five years, and I have made significant progress."
+        "text": "When you heat water to exactly 100 degrees Celsius, it consistently boils and turns into steam."
       },
       {
         "id": 38,
-        "text": "Before the internet became widespread, people relied heavily on libraries and encyclopedias for information."
+        "text": "Despite the heavy torrential rain, the children played happily and energetically in the garden yesterday afternoon."
       },
       {
         "id": 39,
-        "text": "We will try to solve this complex problem, or we will seek expert advice if we get stuck."
+        "text": "By the end of this current year, I will have been diligently studying English for ten consecutive years."
       },
       {
         "id": 40,
-        "text": "As the sun is slowly setting, the entire sky is transforming into a breathtaking palette of vibrant colors."
+        "text": "He might have completely forgotten about our important appointment, because he didn't show up at all."
       }
     ],
     "advanced": [
-      {
-        "id": 1,
-        "text": "Had the board of directors heeded the early warnings about market volatility, the company would not be in such a precarious financial position today."
-      },
-      {
-        "id": 2,
-        "text": "Scarcely had the delegates settled into their seats when the keynote speaker began a polemical tirade that left everyone speechless."
-      },
-      {
-        "id": 3,
-        "text": "Having meticulously collated the data from myriad sources, the researchers were finally in a position to challenge the prevailing orthodoxy."
-      },
-      {
-        "id": 4,
-        "text": "It is of paramount importance that every employee be made aware of the new cybersecurity protocols, lest sensitive information be compromised."
-      },
-      {
-        "id": 5,
-        "text": "What truly distinguishes this era of technological advancement is not merely the pace of change, but its ubiquitous and pervasive impact on daily life."
-      },
-      {
-        "id": 6,
-        "text": "The politician's burgeoning popularity was, for all intents and purposes, predicated on a series of populist promises that were ultimately untenable."
-      },
       {
         "id": 7,
         "text": "Notwithstanding the project's considerable success, the team was on the horns of a dilemma regarding how to scale operations without sacrificing quality."

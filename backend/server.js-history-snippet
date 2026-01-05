@@ -1,0 +1,38 @@
+
+// Practice History Endpoint
+app.get('/api/practice/history', async (req, res) => {
+    try {
+        // 1. Authenticate User
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        // 2. Fetch Sessions
+        const sessions = await PracticeSession.find({ user: userId })
+            .sort({ createdAt: -1 })
+            .limit(50); // Limit to last 50 sessions
+
+        // 3. Transform Data for Frontend
+        const history = sessions.map(session => ({
+            id: session._id,
+            type: session.type === 'topic' ? 'Topic Practice' : 
+                  session.type === 'grammar' ? 'Grammar Practice' :
+                  session.type === 'interview' ? 'Interview Practice' :
+                  session.type === 'listening' ? 'Listening Practice' :
+                  'AI Interviewer',
+            topic: session.topic,
+            score: session.score,
+            date: session.createdAt,
+            duration: session.duration
+        }));
+
+        res.json(history);
+    } catch (error) {
+        console.error('Error fetching history:', error);
+        res.status(500).json({ error: 'Failed to fetch history' });
+    }
+});
