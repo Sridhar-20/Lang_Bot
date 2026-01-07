@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiMic, FiSquare, FiPlay, FiCpu, FiUser, FiVolume2, FiVolumeX, FiSettings, FiRotateCcw } from 'react-icons/fi';
+import ReactMarkdown from 'react-markdown';
+import { FiMic, FiSquare, FiPlay, FiCpu, FiUser, FiVolume2, FiVolumeX, FiSettings, FiRotateCcw, FiSliders, FiCopy, FiCheck } from 'react-icons/fi';
 import { useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import LiquidJarvisAnimation from '../components/LiquidJarvisAnimation';
@@ -26,9 +27,13 @@ const AIInterviewer = () => {
   // Settings Modal State
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [interviewSettings, setInterviewSettings] = useState({
-    voice: 'us-female',
+    voice: 'indian-female',
     type: 'hr'
   });
+  
+  // Bot Mode Input State
+  const [inputMessage, setInputMessage] = useState('');
+  const [copiedId, setCopiedId] = useState(null); // Tracking copy success state
   
   // Whisper & Audio Refs
   const { transcribe, status: whisperStatus } = useWhisper();
@@ -36,6 +41,32 @@ const AIInterviewer = () => {
   const audioChunksRef = useRef([]);
   const messagesEndRef = useRef(null);
   const sessionStartTimeRef = useRef(null);
+  const inputRef = useRef(null); // Ref for auto-focus
+
+  // Global Key Listener for Auto-Focus in Bot Mode
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      // Only active in Bot Mode
+      if (aiMode !== 'bot') return;
+      
+      // Ignore if user is holding modifier keys (Ctrl, Alt, Meta)
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+      // Ignore if focus is already on an input or textarea
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+
+      // Ignore non-printable keys (like F1-F12, Esc, etc., though simple check is length)
+      if (e.key.length !== 1) return;
+
+      // Focus the input
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [aiMode]);
   
   // TTS State
   const [voices, setVoices] = useState([]);
@@ -43,7 +74,7 @@ const AIInterviewer = () => {
 
   // Load Settings from localStorage
   useEffect(() => {
-    const savedVoice = localStorage.getItem('ai_interview_voice') || 'us-female';
+    const savedVoice = localStorage.getItem('ai_interview_voice') || 'indian-female';
     const savedType = localStorage.getItem('ai_interview_type') || 'hr';
     const savedSpeed = localStorage.getItem('ai_interview_speed') || 'medium';
     setInterviewSettings({ voice: savedVoice, type: savedType, speed: savedSpeed });
@@ -117,7 +148,7 @@ const AIInterviewer = () => {
           break;
           
         default:
-          preferred = findVoice({ lang: 'en-US' });
+          preferred = findVoice({ lang: 'en-IN' }) || findVoice({ lang: 'en-US' });
       }
       
       // Final fallback to any English voice
@@ -153,6 +184,14 @@ const AIInterviewer = () => {
     });
   }, [isRecording]);
 
+  // Reset session when mode changes
+  useEffect(() => {
+    if (isSessionActive) {
+        stopSession();
+    }
+    setChatHistory([]);
+  }, [aiMode]);
+
   const startSession = async () => {
     setIsSessionActive(true);
     setChatHistory([]);
@@ -166,7 +205,7 @@ const AIInterviewer = () => {
             body: JSON.stringify({
                 history: [],
                 start: true,
-                interviewType: interviewSettings.type
+                interviewType: aiMode === 'bot' ? 'bot' : interviewSettings.type
             })
         });
 
@@ -174,7 +213,7 @@ const AIInterviewer = () => {
         
         if (data.text) {
             addMessage('ai', data.text);
-            speak(data.text);
+            if (aiMode !== 'bot') speak(data.text);
         }
     } catch (err) {
         console.error("Failed to start interview:", err);
@@ -205,7 +244,7 @@ const AIInterviewer = () => {
                 },
                 body: JSON.stringify({
                     type: 'interview', // Use generic interview type for analysis
-                    topic: `AI Interview (${interviewSettings.type})`,
+                    topic: `AI Session (${aiMode === 'bot' ? 'Bot Mode' : interviewSettings.type})`,
                     transcript: fullTranscript,
                     duration: duration,
                     wordCount: fullTranscript.split(/\s+/).length,
@@ -220,7 +259,19 @@ const AIInterviewer = () => {
   };
 
   const addMessage = (role, text) => {
-    setChatHistory(prev => [...prev, { role, text, timestamp: new Date() }]);
+    const freshId = Date.now();
+    setChatHistory(prev => [...prev, { id: freshId, role, text, timestamp: new Date() }]);
+  };
+
+  const handleCopy = (text, id) => {
+    navigator.clipboard.writeText(text).then(() => {
+        setCopiedId(id);
+        toast.success("Copied to clipboard!", { duration: 1500, position: 'bottom-center' });
+        setTimeout(() => setCopiedId(null), 2000);
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        toast.error("Failed to copy text.");
+    });
   };
 
   const speak = (text) => {
@@ -288,6 +339,57 @@ const AIInterviewer = () => {
     browserSTT.restartRecording();
   };
 
+  const handleSendMessage = async (textOverride = null) => {
+    const textToSend = textOverride || inputMessage;
+    
+    // Don't send empty messages unless it's a voice trigger which might be handled differently
+    if (!textToSend || (!textToSend.trim() && !textOverride)) return;
+    
+    if (textToSend.trim().length === 0) return;
+
+    if (!isSessionActive) {
+        // Auto-start session if user types
+        setIsSessionActive(true);
+        sessionStartTimeRef.current = Date.now();
+    }
+
+    addMessage('user', textToSend);
+    setInputMessage('');
+    setIsProcessing(true);
+    setAiState('processing');
+
+    try {
+        const endpoint = aiMode === 'bot' 
+            ? 'http://localhost:5000/api/bot/chat' 
+            : 'http://localhost:5000/api/interview/chat';
+            
+        const payload = {
+            history: chatHistory.map(m => ({ role: m.role, text: m.text })),
+            userResponse: textToSend,
+            interviewType: interviewSettings.type
+        };
+
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        
+        if (data.text) {
+            addMessage('ai', data.text);
+            if (aiMode !== 'bot') speak(data.text);
+        }
+    } catch (err) {
+        console.error("API Error:", err);
+        toast.error("Failed to get response from AI.");
+        setAiState('idle');
+    } finally {
+        setIsProcessing(false);
+    }
+  };
+
   const handleMicClick = async () => {
     if (isSpeaking) {
         window.speechSynthesis.cancel();
@@ -298,6 +400,16 @@ const AIInterviewer = () => {
 
     if (!isRecording) {
       // START RECORDING
+      
+      // 1. Optimistic UI Updates: Immediate Request
+      setIsRecording(true);
+      setAiState('listening');
+      setTranscript('');
+
+      // 2. Parallel Start: Browser STT (for instant visual feedback)
+      browserSTT.startRecording();
+
+      // 3. Parallel Start: High Quality Mic (for Whisper)
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorderRef.current = new MediaRecorder(stream);
@@ -331,10 +443,27 @@ const AIInterviewer = () => {
                 console.error("Whisper failed, falling back to browser transcript", e);
             }
 
-            // 2. Fallback to Browser Transcript if Whisper failed or empty
-            if (!finalUserText || finalUserText.trim().length === 0) {
-                finalUserText = transcript;
+            // 2. Logic to pick the best transcript
+            let transcriptSource = "Whisper";
+            const whisperText = (finalUserText || "").trim();
+            const browserText = (transcript || "").trim();
+            
+            // Heuristic: If browser transcript is significantly longer (e.g., 40% more words),
+            // it likely captured speech that Whisper missed due to connection or sample issues.
+            const whisperWordCount = whisperText.split(/\s+/).filter(w => w.length > 0).length;
+            const browserWordCount = browserText.split(/\s+/).filter(w => w.length > 0).length;
+            
+            if (browserWordCount > whisperWordCount * 1.4 && browserWordCount > 2) {
+                finalUserText = browserText;
+                transcriptSource = "Browser (Longer Content)";
+            } else if (!whisperText && browserText) {
+                finalUserText = browserText;
+                transcriptSource = "Browser (Whisper Fallback)";
+            } else {
+                finalUserText = whisperText;
             }
+
+            console.log(`STT Result [${transcriptSource}]: "${finalUserText}"`);
 
             if (!finalUserText || finalUserText.trim().length === 0) {
                 toast.error("I didn't hear anything. Please try again.");
@@ -349,21 +478,29 @@ const AIInterviewer = () => {
 
             // 4. Send to Backend
             try {
-                const response = await fetch('http://localhost:5000/api/interview/chat', {
+                const endpoint = aiMode === 'bot' 
+                    ? 'http://localhost:5000/api/bot/chat' 
+                    : 'http://localhost:5000/api/interview/chat';
+                
+                const payload = {
+                    history: chatHistory.map(m => ({ role: m.role, text: m.text })),
+                    userResponse: finalUserText,
+                    interviewType: interviewSettings.type // ignored by bot endpoint
+                };
+
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        history: chatHistory.map(m => ({ role: m.role, text: m.text })),
-                        userResponse: finalUserText,
-                        interviewType: interviewSettings.type
-                    })
+                    body: JSON.stringify(payload)
                 });
 
                 const data = await response.json();
                 
                 if (data.text) {
                     addMessage('ai', data.text);
-                    speak(data.text);
+                    if (aiMode !== 'bot') {
+                        if (aiMode !== 'bot') speak(data.text);
+                    }
                 }
             } catch (err) {
                 console.error("API Error:", err);
@@ -375,14 +512,14 @@ const AIInterviewer = () => {
         };
 
         mediaRecorderRef.current.start();
-        browserSTT.startRecording();
-        setIsRecording(true);
-        setAiState('listening');
-        setTranscript('');
-
+        
       } catch (err) {
         console.error("Mic Error:", err);
         toast.error("Could not access microphone.");
+        // Revert state on critical failure
+        setIsRecording(false);
+        setAiState('idle');
+        browserSTT.stopRecording();
       }
     } else {
       // STOP RECORDING
@@ -404,94 +541,141 @@ const AIInterviewer = () => {
         onSave={handleSettingsSave}
       />
 
-      <div className="ai-header">
-        <h1 className="ai-title">AI Interviewer Pro</h1>
-        <p className="ai-subtitle">Master your interview skills with real-time AI feedback</p>
-        
-        {/* Interview Type Badge */}
-        <div className="interview-type-badge">
-          {interviewSettings.type === 'hr' && '💼 HR Interview'}
-          {interviewSettings.type === 'technical' && '💻 Technical Interview'}
-          {interviewSettings.type === 'behavioral' && '🎯 Behavioral Interview'}
-          {interviewSettings.type === 'mixed' && '🔀 Mixed Interview'}
-          {interviewSettings.type === 'domain-specific' && '🎓 Domain Specific Interview'}
-        </div>
-        
-        {/* Settings Button */}
-        <button 
-          className="settings-button"
-          onClick={() => setIsSettingsModalOpen(true)}
-          title="Interview Settings"
-        >
-          <FiSettings />
-        </button>
+      {/* Fixed Top-Left Controls */}
+      <div className="fixed-controls-container">
+          <SegmentedControl
+            options={[
+              { value: 'bot', label: 'AI Bot' },
+              { value: 'interviewer', label: 'AI Interviewer' }
+            ]}
+            value={aiMode}
+            onChange={setAiMode}
+          />
+
+          {/* Settings Button - Available in both modes */}
+          <button 
+            className="settings-button"
+            onClick={() => setIsSettingsModalOpen(true)}
+            title="Settings"
+          >
+            <FiSliders size={18} />
+          </button>
+
+          {/* End Chat Button - Only in Bot Mode */}
+          {aiMode === 'bot' && isSessionActive && (
+              <button 
+                className="settings-button"
+                onClick={stopSession}
+                title="End & Save Chat"
+                style={{ width: 'auto', padding: '0 15px', borderRadius: '20px', fontSize: '0.8rem' }}
+              >
+                <FiSquare style={{ marginRight: '8px', fontSize: '0.8rem' }} /> End Chat
+              </button>
+          )}
       </div>
 
-      <div className="ai-content">
-        {/* Left Panel: Avatar & Status */}
-        <motion.div 
-          className="glass-card interviewer-section"
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <SegmentedControl
-              options={[
-                { value: 'bot', label: 'AI Bot' },
-                { value: 'interviewer', label: 'AI Interviewer' }
-              ]}
-              value={aiMode}
-              onChange={setAiMode}
-            />
-          </div>
-          <div className="avatar-wrapper">
-            <LiquidJarvisAnimation state={aiState} />
-          </div>
-          
-          <div className="interviewer-status">
-            {aiState === 'idle' && "Ready"}
-            {aiState === 'listening' && "Listening..."}
-            {aiState === 'processing' && "Thinking..."}
-            {aiState === 'speaking' && "Speaking..."}
-          </div>
-
-          <div className="controls-container">
-             {!isSessionActive ? (
-                <button className="control-btn btn-start" onClick={startSession}>
-                    <FiPlay /> Start Interview
-                </button>
-             ) : (
-                <div className="active-controls">
-                    <button 
-                        className={`control-btn ${isRecording ? 'btn-stop-rec' : 'btn-mic'} ${isProcessing ? 'disabled' : ''}`}
-                        onClick={handleMicClick}
-                        disabled={isProcessing}
-                    >
-                        {isRecording ? <FiSquare /> : <FiMic />}
-                        {isRecording ? "Stop Speaking" : "Tap to Speak"}
-                    </button>
-                    
-                    <button className="control-btn btn-end" onClick={stopSession}>
-                        End Session
-                    </button>
+      <div className={`ai-content ${aiMode === 'bot' ? 'ai-content-bot-mode' : ''}`}>
+        {/* Left Panel: Avatar & Status - Hidden in Bot Mode */}
+        <AnimatePresence>
+            {aiMode === 'interviewer' && (
+                <motion.div 
+                className="glass-card interviewer-section"
+                initial={{ x: -50, opacity: 0, width: 0, padding: 0 }}
+                animate={{ x: 0, opacity: 1, width: 350, padding: "30px 20px" }}
+                exit={{ x: -50, opacity: 0, width: 0, padding: 0, margin: 0 }}
+                transition={{ duration: 0.5, type: 'spring', bounce: 0 }}
+                style={{ overflow: 'hidden' }}
+                >
+                <div className="avatar-wrapper">
+                    <LiquidJarvisAnimation state={aiState} />
                 </div>
-             )}
-          </div>
-        </motion.div>
+                
+                <div className="interviewer-status">
+                    {aiState === 'idle' && "Ready"}
+                    {aiState === 'listening' && "Listening..."}
+                    {aiState === 'processing' && "Thinking..."}
+                    {aiState === 'speaking' && "Speaking..."}
+                </div>
+
+                <div className="controls-container">
+                    {/* INTERVIEWER MODE CONTROLS */}
+                        {!isSessionActive ? (
+                            <button className="control-btn btn-start" onClick={startSession}>
+                                <FiPlay /> Start Interview
+                            </button>
+                        ) : (
+                            <div className="active-controls">
+                                <button 
+                                    className={`control-btn ${isRecording ? 'btn-stop-rec' : 'btn-mic'} ${isProcessing ? 'disabled' : ''}`}
+                                    onClick={handleMicClick}
+                                    disabled={isProcessing}
+                                >
+                                    {isRecording ? <FiSquare /> : <FiMic />}
+                                    {isRecording ? "Stop Speaking" : "Tap to Speak"}
+                                </button>
+                                
+                                <button className="control-btn btn-end" onClick={stopSession}>
+                                    End Session
+                                </button>
+                            </div>
+                        )}
+                </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
 
         {/* Right Panel: Chat History */}
         <motion.div 
-          className="glass-card chat-section"
+          layout /* Auto-animate layout changes when sibling disappears */
+          className={`glass-card chat-section ${aiMode === 'bot' ? 'bot-mode-active' : ''}`}
           initial={{ x: 50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.5, type: 'spring', bounce: 0, layout: { duration: 0.4 } }}
         >
             <div className="chat-window">
                 {chatHistory.length === 0 && (
                     <div className="empty-state">
-                        <FiCpu size={40} style={{ opacity: 0.3, marginBottom: 10 }} />
-                        <p>Start the session to begin your interview.</p>
+                        <AnimatePresence mode="wait">
+                            {aiMode === 'bot' ? (
+                                <motion.div
+                                    key="bot-empty"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <h2 style={{ marginBottom: '10px', color: 'var(--text-primary)' }}>Lagua AI Bot</h2>
+                                    <p>Hi! I'm Lagua. Ask me anything!</p>
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="interviewer-empty"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <h2 style={{ marginBottom: '10px', color: 'var(--text-primary)' }}>AI Interviewer Pro</h2>
+                                    <div style={{ 
+                                        background: 'rgba(6, 182, 212, 0.1)', 
+                                        color: 'var(--accent-primary)', 
+                                        padding: '5px 15px', 
+                                        borderRadius: '15px',
+                                        fontSize: '0.9rem',
+                                        fontWeight: '600',
+                                        marginBottom: '10px',
+                                        display: 'inline-block'
+                                    }}>
+                                        {interviewSettings.type === 'hr' && '💼 HR Interview'}
+                                        {interviewSettings.type === 'technical' && '💻 Technical Interview'}
+                                        {interviewSettings.type === 'behavioral' && '🎯 Behavioral Interview'}
+                                        {interviewSettings.type === 'mixed' && '🔀 Mixed Interview'}
+                                        {interviewSettings.type === 'domain-specific' && '🎓 Domain Specific Interview'}
+                                    </div>
+                                    <p>Start the session to begin your interview.</p>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 )}
                 
@@ -506,7 +690,40 @@ const AIInterviewer = () => {
                             {msg.role === 'ai' ? <FiCpu /> : <FiUser />}
                         </div>
                         <div className="message-bubble">
-                            {msg.text}
+                            {msg.role === 'ai' ? (
+                                <>
+                                    <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                    <div className="message-actions">
+                                        <button 
+                                            className="message-action-btn copy-btn"
+                                            onClick={() => handleCopy(msg.text, msg.id)}
+                                            title="Copy text"
+                                        >
+                                            {copiedId === msg.id ? <FiCheck size={14} /> : <FiCopy size={14} />}
+                                        </button>
+                                        {aiMode === 'bot' && (
+                                            <button 
+                                                className="message-action-btn speaker-btn"
+                                                onClick={() => speak(msg.text)}
+                                                title="Read aloud"
+                                            >
+                                                <FiVolume2 size={14} />
+                                            </button>
+                                        )}
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    {msg.text}
+                                    <button 
+                                        className="message-action-btn copy-btn user"
+                                        onClick={() => handleCopy(msg.text, msg.id)}
+                                        title="Copy text"
+                                    >
+                                        {copiedId === msg.id ? <FiCheck size={14} /> : <FiCopy size={14} />}
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </motion.div>
                 ))}
@@ -544,6 +761,37 @@ const AIInterviewer = () => {
 
                 <div ref={messagesEndRef} />
             </div>
+
+            {/* Input Area - ONLY FOR BOT MODE */}
+            {aiMode === 'bot' && (
+                <div className="bot-input-area">
+                    <input 
+                        ref={inputRef}
+                        type="text" 
+                        className="bot-text-input"
+                        placeholder="Type your message..."
+                        value={inputMessage}
+                        onChange={(e) => setInputMessage(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                        disabled={isProcessing || isRecording}
+                    />
+                    <button 
+                        className="bot-send-btn"
+                        onClick={() => handleSendMessage()}
+                        disabled={!inputMessage.trim() || isProcessing}
+                    >
+                        <FiPlay style={{ marginLeft: '2px' }} />
+                    </button>
+                    <button 
+                        className={`bot-mic-btn ${isRecording ? 'recording' : ''}`}
+                        onClick={handleMicClick}
+                        title="Voice Input"
+                        disabled={isProcessing}
+                    >
+                         {isRecording ? <FiSquare /> : <FiMic />}
+                    </button>
+                </div>
+            )}
         </motion.div>
       </div>
     </div>

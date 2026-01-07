@@ -6,15 +6,12 @@ export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
-    // Check localStorage first, default to 'dark'
     const savedTheme = localStorage.getItem('app_theme');
     return savedTheme || 'dark';
   });
 
   useEffect(() => {
-    // Update attribute on document root
     document.documentElement.setAttribute('data-theme', theme);
-    // Save to localStorage
     localStorage.setItem('app_theme', theme);
   }, [theme]);
 

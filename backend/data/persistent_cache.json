@@ -1,48 +1,16 @@
 {
   "topicCache": [
     {
-      "id": 10,
-      "text": "Describe a significant failure you've experienced. How did it shape your perspective and contribute to your personal growth?"
-    },
-    {
-      "id": 11,
-      "text": "What daily practices or philosophical approaches do you believe are most effective in cultivating genuine happiness and well-being?"
-    },
-    {
-      "id": 12,
-      "text": "How crucial is empathy in personal relationships and professional environments, and what are practical ways to develop it?"
-    },
-    {
-      "id": 13,
-      "text": "How can tourism be both a force for economic development and a threat to local cultures, and what strategies can mitigate negative impacts?"
-    },
-    {
-      "id": 14,
-      "text": "What elements make a place truly feel like 'home,' regardless of where you were born, and how does this concept evolve over time?"
-    },
-    {
-      "id": 15,
-      "text": "What are the most significant advantages and challenges of living in a country or culture different from your own, and how does it change you?"
-    },
-    {
-      "id": 16,
-      "text": "In what profound ways does traveling to diverse places challenge one's preconceived notions and broaden their worldview?"
-    },
-    {
-      "id": 17,
-      "text": "If you had the power to invent a new global holiday, what would its purpose be, how would it be celebrated, and what impact would you hope it would have?"
-    },
-    {
       "id": 18,
-      "text": "If you could witness or alter one historical event, which would it be, and what do you imagine the ripple effects of your involvement might be?"
+      "text": "If you could switch lives with someone for a day, who would it be and what do you think you would learn?"
     },
     {
       "id": 19,
-      "text": "Should humanity discover intelligent extraterrestrial life, what do you predict would be the most immediate and long-term implications for human society, religion, and science?"
+      "text": "What strategies can individuals use to maintain a healthy work-life balance in a fast-paced world?"
     },
     {
       "id": 20,
-      "text": "Which invention from science fiction would you most like to see become a reality (e.g., teleportation, universal translator, time machine), and what societal shifts would it bring?"
+      "text": "How can we ensure that technological advancements benefit all segments of society, not just a privileged few?"
     }
   ],
   "grammarCache": {
@@ -198,138 +166,6 @@
     ],
     "intermediate": [
       {
-        "id": 40,
-        "text": "As the sun is slowly setting, the entire sky is transforming into a breathtaking palette of vibrant colors."
-      },
-      {
-        "id": 1,
-        "text": "The old house stood empty for years, but now a new family lives there and they seem very happy."
-      },
-      {
-        "id": 2,
-        "text": "We are currently planning our summer vacation, and we will probably visit Italy or Greece."
-      },
-      {
-        "id": 3,
-        "text": "She has already finished her extensive report, so she can relax and enjoy the evening."
-      },
-      {
-        "id": 4,
-        "text": "If you study consistently and review your notes, you will definitely pass the upcoming exam."
-      },
-      {
-        "id": 5,
-        "text": "While I was walking to work this morning, I suddenly remembered my forgotten keys at home."
-      },
-      {
-        "id": 6,
-        "text": "He is going to start a new challenging job next month, and he feels incredibly excited about it."
-      },
-      {
-        "id": 7,
-        "text": "They have been working diligently on this complex project since early morning, and they still haven't taken a proper break."
-      },
-      {
-        "id": 8,
-        "text": "The new bridge is being built very quickly, and it should be finished by next year's spring."
-      },
-      {
-        "id": 9,
-        "text": "Although the weather was unexpectedly terrible, we still went hiking in the mountains, and we actually had a lot of fun."
-      },
-      {
-        "id": 10,
-        "text": "Before she moved to Paris for her studies, she had never experienced such vibrant and diverse city life."
-      },
-      {
-        "id": 11,
-        "text": "I could definitely help you with your advanced homework if you explain precisely what parts you don't understand."
-      },
-      {
-        "id": 12,
-        "text": "This time next week, we will be flying high over the Atlantic Ocean on our way to London for a conference."
-      },
-      {
-        "id": 13,
-        "text": "If I had significantly more free time during the week, I would enthusiastically learn to play a new musical instrument like the guitar."
-      },
-      {
-        "id": 14,
-        "text": "The ancient Roman ruins were discovered by dedicated archaeologists last century, and they are now a very popular tourist attraction."
-      },
-      {
-        "id": 15,
-        "text": "The express train usually arrives punctually on time, but today it might be slightly delayed due to the unexpected heavy snow."
-      },
-      {
-        "id": 16,
-        "text": "He tried his absolute best to open the stubbornly sealed jar, yet it remained frustratingly impenetrable."
-      },
-      {
-        "id": 17,
-        "text": "The woman who is standing elegantly near the window and smiling warmly is my beloved aunt, visiting from Canada."
-      },
-      {
-        "id": 18,
-        "text": "My brother generally prefers a hot cup of tea, but yesterday he drank coffee because there was absolutely no tea left."
-      },
-      {
-        "id": 19,
-        "text": "By the time you eventually arrive home, I will have already cooked a delicious dinner and set the entire dining table."
-      },
-      {
-        "id": 20,
-        "text": "They had been waiting impatiently for over an hour when the bus finally arrived at the station, much to their relief."
-      },
-      {
-        "id": 21,
-        "text": "She decided to stay home for the entire weekend, for she was feeling quite unwell and needed proper rest."
-      },
-      {
-        "id": 22,
-        "text": "If he had truly listened carefully to my practical advice, he wouldn't have made that easily avoidable mistake."
-      },
-      {
-        "id": 23,
-        "text": "The new company policy has been officially announced by the management, and all employees are currently discussing its implications."
-      },
-      {
-        "id": 24,
-        "text": "We went to the local library to seriously study for our exams, but we ended up chatting for an hour instead."
-      },
-      {
-        "id": 25,
-        "text": "Although he usually works remotely from home, today he is attending an important business conference downtown."
-      },
-      {
-        "id": 26,
-        "text": "She politely asked me if I knew where the nearest post office was located and how to get there."
-      },
-      {
-        "id": 27,
-        "text": "You can either come with us to the cinema to watch the new blockbuster, or you can stay home and watch a movie there."
-      },
-      {
-        "id": 28,
-        "text": "Learning a new and complex language requires significant dedication and consistent practice over time."
-      },
-      {
-        "id": 29,
-        "text": "I haven't seen Mark since last week; he should have called by now to update me on his progress."
-      },
-      {
-        "id": 30,
-        "text": "We will officially start the crucial meeting once everyone has safely arrived and settled down."
-      },
-      {
-        "id": 31,
-        "text": "The old broken-down car that broke down on the busy highway belonged to my rather unfortunate neighbor."
-      },
-      {
-        "id": 32,
-        "text": "The comprehensive results of the groundbreaking experiment will be published in a prestigious scientific journal next month."
-      },
-      {
         "id": 33,
         "text": "Since I moved to this vibrant city, I have made many wonderful new friends, and I feel very happy and settled here."
       },
@@ -360,21 +196,169 @@
       {
         "id": 40,
         "text": "He might have completely forgotten about our important appointment, because he didn't show up at all."
-      }
-    ],
-    "advanced": [
+      },
+      {
+        "id": 1,
+        "text": "By the time I arrived, they had already eaten dinner."
+      },
+      {
+        "id": 2,
+        "text": "The new employee was very nervous on his first day of work."
+      },
+      {
+        "id": 3,
+        "text": "If I had studied harder, I would have passed the exam."
+      },
+      {
+        "id": 4,
+        "text": "The city is much more crowded than it was ten years ago."
+      },
+      {
+        "id": 5,
+        "text": "By next year, I will have been living in this city for five years."
+      },
+      {
+        "id": 6,
+        "text": "The teacher asked the students to write a short essay about their summer vacation."
+      },
       {
         "id": 7,
-        "text": "Notwithstanding the project's considerable success, the team was on the horns of a dilemma regarding how to scale operations without sacrificing quality."
+        "text": "Although it was raining, we still went to the park."
       },
       {
         "id": 8,
-        "text": "So profound was the philosopher's influence that his work continues to be a cornerstone of contemporary ethical debates, centuries after his death."
+        "text": "The company will have to reduce its staff if it wants to survive."
       },
       {
         "id": 9,
-        "text": "Were it not for the serendipitous discovery of a forgotten manuscript, our understanding of this ancient civilization would be significantly impoverished."
+        "text": "If I won the lottery, I would buy a house on the beach."
       },
+      {
+        "id": 10,
+        "text": "The concert was canceled due to the bad weather."
+      },
+      {
+        "id": 11,
+        "text": "The new policy has been implemented to reduce traffic congestion."
+      },
+      {
+        "id": 12,
+        "text": "The tourists got lost in the city because they didn't have a map."
+      },
+      {
+        "id": 13,
+        "text": "The student was disappointed when he didn't get the scholarship."
+      },
+      {
+        "id": 14,
+        "text": "The weather forecast says it will rain tomorrow, so take an umbrella."
+      },
+      {
+        "id": 15,
+        "text": "The hotel room was very small, but it had a great view of the city."
+      },
+      {
+        "id": 16,
+        "text": "The company is looking for someone who speaks fluent English and Spanish."
+      },
+      {
+        "id": 17,
+        "text": "The movie was so boring that I fell asleep halfway through."
+      },
+      {
+        "id": 18,
+        "text": "The school will be closed for the next two weeks due to the holidays."
+      },
+      {
+        "id": 19,
+        "text": "If I had more free time, I would learn how to play the guitar."
+      },
+      {
+        "id": 20,
+        "text": "The city is hosting a festival to celebrate its 500th anniversary."
+      },
+      {
+        "id": 21,
+        "text": "The new smartphone is much faster and more powerful than the old one."
+      },
+      {
+        "id": 22,
+        "text": "The teacher gave the students a lot of homework to do over the weekend."
+      },
+      {
+        "id": 23,
+        "text": "The company has decided to expand its business to Asia."
+      },
+      {
+        "id": 24,
+        "text": "The book was so interesting that I read it in one day."
+      },
+      {
+        "id": 25,
+        "text": "The student was happy when he finally understood the difficult math concept."
+      },
+      {
+        "id": 26,
+        "text": "The hotel staff were very friendly and helpful during our stay."
+      },
+      {
+        "id": 27,
+        "text": "The weather was perfect for the wedding, sunny and not too hot."
+      },
+      {
+        "id": 28,
+        "text": "The city has a lot of traffic, but the public transportation system is very good."
+      },
+      {
+        "id": 29,
+        "text": "The company is planning to launch a new product next month."
+      },
+      {
+        "id": 30,
+        "text": "The tourists were amazed by the beauty of the ancient ruins."
+      },
+      {
+        "id": 31,
+        "text": "The student was sad when he said goodbye to his friends on the last day of school."
+      },
+      {
+        "id": 32,
+        "text": "The city has a lot of parks and green spaces where people can relax."
+      },
+      {
+        "id": 33,
+        "text": "The teacher asked the students to work in groups to complete the project."
+      },
+      {
+        "id": 34,
+        "text": "The new employee was given a lot of responsibility from the start."
+      },
+      {
+        "id": 35,
+        "text": "The company has a very good reputation for treating its employees well."
+      },
+      {
+        "id": 36,
+        "text": "The student was proud of himself when he finally finished the difficult project."
+      },
+      {
+        "id": 37,
+        "text": "The city is known for its vibrant cultural scene and many museums."
+      },
+      {
+        "id": 38,
+        "text": "The teacher encouraged the students to ask questions and participate in class."
+      },
+      {
+        "id": 39,
+        "text": "The company is trying to reduce its carbon footprint by using renewable energy."
+      },
+      {
+        "id": 40,
+        "text": "The student was relieved when he finally received his exam results and had passed."
+      }
+    ],
+    "advanced": [
       {
         "id": 10,
         "text": "The new policy, the implications of which have yet to be fully comprehended, has been met with a mixture of cautious optimism and profound skepticism."
@@ -500,5 +484,102 @@
         "text": "All things considered, and despite the innumerable obstacles thrown in our path, the expedition could be deemed nothing less than a resounding success."
       }
     ]
+  },
+  "listeningCache": {
+    "conversation": {
+      "basic": [],
+      "intermediate": [],
+      "advanced": []
+    },
+    "story": {
+      "basic": [],
+      "intermediate": [],
+      "advanced": []
+    }
+  },
+  "readingCache": {
+    "basic": [],
+    "intermediate": [
+      {
+        "type": "reading",
+        "title": "The Science of Climate Change",
+        "content": "Climate change is one of the most pressing issues of our time, with far-reaching consequences for the health of our planet and its inhabitants. The scientific consensus is clear: human activities, particularly the burning of fossil fuels and deforestation, are releasing large amounts of greenhouse gases, such as carbon dioxide and methane, into the atmosphere, leading to a global average temperature increase of over 1°C since the late 19th century. This warming is causing melting of polar ice caps, sea-level rise, and altered weather patterns, such as more frequent and intense heatwaves, droughts, and storms. The impacts of climate change are already being felt, from more frequent natural disasters to changes in the distribution of plants and animals. The science of climate change is complex, involving many different fields of study, including physics, chemistry, biology, and economics. Climate models, which use complex computer simulations to predict future climate change, have become increasingly sophisticated, allowing scientists to better understand the likely consequences of different scenarios. However, there is still much uncertainty about the exact magnitude and timing of climate change, and more research is needed to improve our understanding. One of the key challenges in addressing climate change is the need for immediate and drastic reduction in greenhouse gas emissions, which will require significant changes to our energy systems, transportation, and land use practices. This will require a coordinated effort from governments, businesses, and individuals around the world. In recent years, there have been many positive developments, including the growth of renewable energy sources, increased energy efficiency, and the adoption of climate-friendly policies. However, much more needs to be done to avoid the worst impacts of climate change. The window for action is rapidly closing, and it is essential that we take bold and immediate action to reduce our greenhouse gas emissions and transition to a more sustainable future. The science of climate change is clear, and it is up to us to take action to protect the planet and ensure a livable future for generations to come. The consequences of inaction will be severe, and it is our responsibility to act now to mitigate the effects of climate change. By working together, we can create a more sustainable future and avoid the worst impacts of climate change.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "What is the main cause of climate change?",
+            "options": [
+              "Natural factors, such as volcanic eruptions",
+              "Human activities, such as burning fossil fuels and deforestation",
+              "A combination of natural and human factors",
+              "Unknown factors"
+            ],
+            "answer": "B",
+            "explanation": "The scientific consensus is clear: human activities, particularly the burning of fossil fuels and deforestation, are releasing large amounts of greenhouse gases into the atmosphere"
+          },
+          {
+            "id": 2,
+            "question": "What is the expected outcome of climate change?",
+            "options": [
+              "A global average temperature decrease",
+              "A global average temperature increase",
+              "No change in global temperature",
+              "A stabilization of global temperature"
+            ],
+            "answer": "B",
+            "explanation": "This warming is causing melting of polar ice caps, sea-level rise, and altered weather patterns"
+          },
+          {
+            "id": 3,
+            "question": "What is one of the key challenges in addressing climate change?",
+            "options": [
+              "The need for more research",
+              "The need for immediate and drastic reduction in greenhouse gas emissions",
+              "The need for increased funding",
+              "The need for more public awareness"
+            ],
+            "answer": "B",
+            "explanation": "One of the key challenges in addressing climate change is the need for immediate and drastic reduction in greenhouse gas emissions"
+          },
+          {
+            "id": 4,
+            "question": "What is the role of climate models in understanding climate change?",
+            "options": [
+              "To predict future climate change",
+              "To study the impacts of climate change",
+              "To develop new technologies to mitigate climate change",
+              "To raise public awareness about climate change"
+            ],
+            "answer": "A",
+            "explanation": "Climate models, which use complex computer simulations to predict future climate change, have become increasingly sophisticated"
+          },
+          {
+            "id": 5,
+            "question": "What is the consequence of inaction on climate change?",
+            "options": [
+              "Severe impacts on the environment and human health",
+              "No significant impacts on the environment and human health",
+              "Some impacts on the environment, but not human health",
+              "Some impacts on human health, but not the environment"
+            ],
+            "answer": "A",
+            "explanation": "The consequences of inaction will be severe, and it is our responsibility to act now to mitigate the effects of climate change"
+          },
+          {
+            "id": 6,
+            "question": "What is necessary to address climate change?",
+            "options": [
+              "A coordinated effort from governments, businesses, and individuals",
+              "Increased funding for climate change research",
+              "More public awareness about climate change",
+              "The development of new technologies to mitigate climate change"
+            ],
+            "answer": "A",
+            "explanation": "This will require a coordinated effort from governments, businesses, and individuals around the world"
+          }
+        ]
+      }
+    ],
+    "advanced": []
   }
 }

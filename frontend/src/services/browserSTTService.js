@@ -2,6 +2,7 @@ class BrowserSTTService {
     constructor() {
         this.recognition = null;
         this.isRecording = false;
+        this.shouldBeRecording = false; // New flag for persistent state
         this.callbacks = {
             onTranscript: () => {},
             onError: () => {},
@@ -35,9 +36,11 @@ class BrowserSTTService {
             this.isRecording = false;
             this.callbacks.onEnd();
             
-            // Handle restart logic
-            if (this.isRestarting) {
+            // Auto-restart if we are supposed to be recording
+            // This prevents browser timeout from stopping capture during long pauses
+            if (this.isRestarting || this.shouldBeRecording) {
                 this.isRestarting = false;
+                this.shouldBeRecording = true; // maintain state
                 this.startRecording();
             }
         };
@@ -71,18 +74,26 @@ class BrowserSTTService {
     }
 
     startRecording() {
+        this.shouldBeRecording = true; // Mark as active
         if (this.recognition && !this.isRecording) {
             this.finalTranscript = ''; // Reset transcript on new session
             try {
                 this.recognition.start();
             } catch (e) {
                 console.error("Error starting recognition:", e);
+                // On error, check if it's already started, otherwise reset should flag
+                if (e.message.includes('already started')) {
+                    this.isRecording = true;
+                } else {
+                    this.shouldBeRecording = false;
+                }
             }
         }
     }
 
     stopRecording() {
-        this.isRestarting = false; // Cancel any pending restart
+        this.isRestarting = false;
+        this.shouldBeRecording = false; // Mark as inactive
         if (this.recognition && this.isRecording) {
             this.recognition.stop();
         }

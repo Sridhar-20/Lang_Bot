@@ -1,0 +1,590 @@
+/* GrammarVariant.css */
+
+/* --- Grammar Mode Layout Overrides --- */
+.practice-container.grammar-mode {
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    /* Wider for side-by-side */
+    margin: 0 auto;
+    gap: 30px;
+}
+
+/* Hide the Orb section and merge columns */
+.practice-container.grammar-mode .practice-left {
+    width: 100%;
+    order: 2;
+    /* Controls below prompt/transcript */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.practice-container.grammar-mode .practice-right {
+    width: 100%;
+    order: 1;
+    /* Prompt/Transcript on top */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Responsive: Stack on smaller screens */
+@media (max-width: 900px) {
+    .practice-container.grammar-mode .practice-right {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Theme Variables --- */
+:root {
+    /* Default / Light Theme (Paper-like aesthetic) */
+    --grammar-bg: #f8f9fa;
+    --grammar-card-bg: #ffffff;
+    --grammar-text: #2d3748;
+    --grammar-text-secondary: #718096;
+    --grammar-border: #e2e8f0;
+    --grammar-accent: #3182ce;
+    --grammar-accent-glow: rgba(49, 130, 206, 0.2);
+    --grammar-success: #38a169;
+    --grammar-error: #e53e3e;
+}
+
+[data-theme='dark'] {
+    /* Dark Theme (Slate/Navy aesthetic) */
+    --grammar-bg: #0f172a;
+    /* Slate 900 */
+    --grammar-card-bg: #1e293b;
+    /* Slate 800 */
+    --grammar-text: #f1f5f9;
+    /* Slate 100 */
+    --grammar-text-secondary: #94a3b8;
+    /* Slate 400 */
+    --grammar-border: #334155;
+    /* Slate 700 */
+    --grammar-accent: #38bdf8;
+    /* Sky 400 */
+    --grammar-accent-glow: rgba(56, 189, 248, 0.2);
+    --grammar-success: #4ade80;
+    --grammar-error: #f87171;
+}
+
+/* --- Component Styling for Grammar Mode --- */
+
+/* Page Background override for Grammar Page wrapper */
+.grammar-page-wrapper {
+    background-color: var(--grammar-bg);
+    min-height: 100vh;
+    color: var(--grammar-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Cards */
+.practice-container.grammar-mode .prompt-card,
+.practice-container.grammar-mode .transcript-card {
+    background: var(--grammar-card-bg);
+    border: 1px solid var(--grammar-border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+}
+
+.practice-container.grammar-mode .prompt-text {
+    font-family: 'Inter', sans-serif;
+    /* Example font */
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--grammar-text);
+}
+
+/* Controls Area Re-styling */
+.practice-container.grammar-mode .controls-area {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    justify-content: center;
+}
+
+.practice-container.grammar-mode .main-controls {
+    justify-content: center;
+}
+
+.practice-container.grammar-mode .control-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    /* Minimalist circle buttons */
+}
+
+/* Hide Visualizer Container in Grammar Mode */
+.practice-container.grammar-mode .ai-visualizer {
+    display: none;
+}
+
+/* New "Recording Indicator" for Grammar Mode */
+.grammar-recording-indicator {
+    height: 4px;
+    width: 100%;
+    background: var(--grammar-border);
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+    margin-top: 20px;
+}
+
+.grammar-recording-indicator.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 30%;
+    background: var(--grammar-accent);
+    animation: grammardata-loading 1.5s infinite ease-in-out;
+    border-radius: 2px;
+}
+
+@keyframes grammardata-loading {
+    0% {
+        left: -30%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* --- Premium Setup Wizard Styling --- */
+
+:root {
+    /* Default / Light Theme */
+    --wizard-bg: #f8fafc;
+    --wizard-bg-grad-start: #e2e8f0;
+    --wizard-bg-grad-end: #f8fafc;
+    --wizard-text-main: #1e293b;
+    --wizard-text-muted: #64748b;
+    --wizard-card-bg: rgba(255, 255, 255, 0.7);
+    --wizard-card-border: rgba(0, 0, 0, 0.1);
+    --wizard-card-hover: rgba(0, 0, 0, 0.05);
+    --wizard-card-selected: rgba(59, 130, 246, 0.1);
+    /* Blue tint */
+    --wizard-border-selected: #3b82f6;
+    --wizard-orb-opacity: 0.15;
+    --wizard-btn-bg: white;
+    --wizard-btn-text: #1e293b;
+    --wizard-nav-bg: #1e293b;
+    --wizard-nav-text: white;
+
+    --grammar-primary: #8b5cf6;
+    --grammar-secondary: #0ea5e9;
+    --grammar-accent-pink: #ec4899;
+}
+
+[data-theme='dark'] {
+    /* Dark Theme */
+    --wizard-bg: #0a0a12;
+    --wizard-bg-grad-start: #1a1a2e;
+    --wizard-bg-grad-end: #05050a;
+    --wizard-text-main: #f8fafc;
+    --wizard-text-muted: #94a3b8;
+    --wizard-card-bg: rgba(255, 255, 255, 0.03);
+    --wizard-card-border: rgba(255, 255, 255, 0.1);
+    --wizard-card-hover: rgba(255, 255, 255, 0.08);
+    --wizard-card-selected: rgba(255, 255, 255, 0.12);
+    --wizard-border-selected: white;
+    --wizard-orb-opacity: 0.4;
+    --wizard-btn-bg: rgba(255, 255, 255, 0.1);
+    --wizard-btn-text: white;
+    --wizard-nav-bg: white;
+    --wizard-nav-text: black;
+}
+
+.grammar-setup-wrapper {
+    min-height: 100vh;
+    background-color: var(--wizard-bg);
+    background-image: radial-gradient(ellipse at top, var(--wizard-bg-grad-start) 0%, var(--wizard-bg-grad-end) 50%, var(--wizard-bg) 100%);
+    position: relative;
+    overflow: hidden;
+    color: var(--wizard-text-main);
+    display: flex;
+    flex-direction: column;
+    transition: background 0.5s ease, color 0.5s ease;
+}
+
+/* Background Effects */
+.bg-grid-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(to right, rgba(128, 128, 128, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(128, 128, 128, 0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.floating-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: var(--wizard-orb-opacity);
+    z-index: 0;
+    animation: floatOrb 8s infinite ease-in-out;
+    will-change: transform, border-radius;
+    pointer-events: none;
+}
+
+
+
+@keyframes floatOrb {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+
+    33% {
+        transform: translate(30px, -50px) rotate(120deg) scale(1.1);
+        border-radius: 40% 60% 70% 30% / 40% 40% 60% 50%;
+    }
+
+    66% {
+        transform: translate(-20px, 20px) rotate(240deg) scale(0.95);
+        border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%;
+    }
+
+    100% {
+        transform: translate(0, 0) rotate(360deg) scale(1);
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+}
+
+/* Wizard Content */
+.wizard-container {
+    position: relative;
+    z-index: 10;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px;
+    /* Increased max-width for 4 columns */
+    margin: 0 auto;
+}
+
+/* Step Indicators */
+.step-indicator-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 50px;
+}
+
+.step-indicator-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    position: relative;
+    background: rgba(128, 128, 128, 0.1);
+    color: var(--wizard-text-muted);
+}
+
+.step-indicator-btn.active {
+    background: var(--grammar-primary);
+    color: white;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    transform: scale(1.1);
+}
+
+.step-indicator-btn.completed {
+    background: var(--grammar-secondary);
+    color: white;
+}
+
+/* Headers */
+.wizard-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.wizard-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    background: linear-gradient(to right, var(--wizard-text-main), var(--wizard-text-muted));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.wizard-subtitle {
+    font-size: 1.2rem;
+    color: var(--wizard-text-muted);
+}
+
+/* Option Grid */
+.wizard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+}
+
+.wizard-grid.two-cols {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 600px;
+}
+
+.wizard-grid.four-cols {
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 Columns */
+    max-width: 1100px;
+    /* Wider for 4 items */
+}
+
+/* Grid Card */
+.wizard-option-card {
+    background: var(--wizard-card-bg);
+    border: 1px solid var(--wizard-card-border);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 30px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: visible;
+    /* Changed from hidden to visible for absolute overlay */
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.wizard-option-card:hover {
+    background: var(--wizard-card-hover);
+    transform: translateY(-5px);
+}
+
+.wizard-option-card.selected {
+    background: var(--wizard-card-selected);
+    border-color: var(--wizard-border-selected);
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
+}
+
+.wizard-option-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: block;
+    color: var(--wizard-text-main);
+}
+
+.wizard-option-desc {
+    font-size: 0.9rem;
+    color: var(--wizard-text-muted);
+}
+
+.check-indicator {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 24px;
+    height: 24px;
+    background: var(--wizard-border-selected);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--wizard-bg);
+    font-size: 0.8rem;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s;
+}
+
+.wizard-option-card.selected .check-indicator {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Custom Question Dropdown styling */
+.custom-dropdown-container {
+    margin-top: 15px;
+    animation: fadeIn 0.3s ease;
+    width: 100%;
+}
+
+.custom-select {
+    width: 100%;
+    padding: 10px;
+    background: var(--wizard-bg);
+    border: 1px solid var(--wizard-card-border);
+    border-radius: 8px;
+    color: var(--wizard-text-main);
+    font-size: 1rem;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-select option {
+    background: var(--wizard-bg);
+    color: var(--wizard-text-main);
+}
+
+.custom-select:focus {
+    border-color: var(--grammar-primary);
+}
+
+/* Navigation Buttons */
+.wizard-nav {
+    display: flex;
+    gap: 20px;
+    margin-top: 60px;
+}
+
+.nav-btn {
+    padding: 16px 40px;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.nav-btn-prev {
+    background: transparent;
+    border: 2px solid var(--wizard-text-muted);
+    color: var(--wizard-text-main);
+    opacity: 0.7;
+}
+
+.nav-btn-prev:hover {
+    background: rgba(128, 128, 128, 0.1);
+    opacity: 1;
+}
+
+.nav-btn-next {
+    background: var(--wizard-nav-bg);
+    color: var(--wizard-nav-text);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.nav-btn-next:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.nav-btn-start {
+    background: linear-gradient(135deg, var(--grammar-primary), var(--grammar-accent-pink));
+    color: white;
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-btn-start:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+/* Back Link */
+.back-link-wrapper {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    z-index: 20;
+}
+
+.back-link {
+    color: var(--wizard-text-muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--wizard-text-main);
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px) {
+
+    .wizard-grid,
+    .wizard-grid.two-cols,
+    .wizard-grid.four-cols {
+        grid-template-columns: 1fr;
+        /* Stack on mobile */
+        max-width: 100%;
+    }
+
+    .wizard-title {
+        font-size: 2.5rem;
+    }
+}
+
+/* --- Progress Stepper Styles (Added for Visualization) --- */
+.progress-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--grammar-card-bg);
+    border: 2px solid var(--grammar-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: var(--grammar-text-secondary);
+    transition: all 0.3s ease;
+    z-index: 2;
+    flex-shrink: 0;
+}
+
+.step-circle.active {
+    border-color: var(--grammar-accent);
+    color: var(--grammar-accent);
+    box-shadow: 0 0 0 4px var(--grammar-accent-glow);
+    transform: scale(1.1);
+}
+
+.step-circle.completed {
+    background: var(--grammar-success);
+    border-color: var(--grammar-success);
+    color: white;
+}
+
+.step-line {
+    flex: 1;
+    height: 3px;
+    background: var(--grammar-border);
+    border-radius: 2px;
+    max-width: 50px;
+    /* Limit line length */
+    transition: background 0.3s ease;
+}
+
+.step-line.filled {
+    background: var(--grammar-success);
+}

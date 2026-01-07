@@ -1,72 +1,98 @@
 /* AI Interviewer Page Styles */
 /* AI Interviewer Page Styles */
+/* UI Container - Pushed down to clear the floating controls */
 .ai-interviewer-container {
     height: 100vh;
-    /* Fixed height */
     width: 100vw;
-    padding: 80px 20px 20px;
-    /* Keep top padding for nav */
+    padding: 160px 20px 10px;
+    /* Reduced bottom padding to stretch down */
     background: radial-gradient(circle at top right, var(--bg-secondary) 0%, var(--bg-primary) 60%);
     color: var(--text-primary);
     font-family: var(--font-body);
     overflow: hidden;
-    /* Prevent body scroll */
     display: flex;
     flex-direction: column;
     transition: background 0.3s ease;
-}
-
-[data-theme='light'] .ai-interviewer-container {
-    background: radial-gradient(circle at top right, #e0f2fe 0%, #f0f9ff 40%, #ffffff 100%);
-}
-
-.ai-header {
-    text-align: center;
-    margin-bottom: 20px;
-    flex-shrink: 0;
     position: relative;
-    /* Header shouldn't shrink */
 }
 
-/* Main Content Area */
+/* Main Content Area - Restored */
 .ai-content {
     display: flex;
     gap: 20px;
     flex-grow: 1;
     overflow: hidden;
     height: 100%;
+    flex-direction: row;
+    /* Force side-by-side */
 }
 
-.settings-button {
-    position: absolute;
-    top: 0;
-    /* Align to top since header centers content */
-    right: 0;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
+/* Global Centered Glass Pill Controls */
+.fixed-controls-container {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.95);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: max-content;
+
+    /* Premium Glass Pill Style */
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px) saturate(180%);
+    padding: 8px 24px;
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+}
+
+/* Transparent settings button in pill */
+.fixed-controls-container .settings-button {
+    position: static;
+    transform: none;
+    margin: 0;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    box-shadow: none;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    transition: background 0.2s ease;
 }
 
-[data-theme='light'] .settings-button {
-    background: #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.fixed-controls-container .settings-button:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    transform: rotate(15deg);
 }
 
-.settings-button:hover {
-    color: var(--accent-primary);
-    border-color: var(--accent-primary);
-    background: var(--bg-secondary);
-    transform: rotate(90deg);
+[data-theme='dark'] .fixed-controls-container .settings-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .fixed-controls-container {
+    background: rgba(20, 20, 20, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 900px) {
+    .fixed-controls-container {
+        top: 85px;
+        transform: translateX(-50%) scale(0.85);
+        padding: 5px 15px;
+    }
+
+    .ai-interviewer-container {
+        padding-top: 150px;
+    }
 }
 
 /* Glassmorphism Cards */
@@ -79,7 +105,7 @@
     box-shadow: var(--card-shadow);
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease, padding 0.4s ease, margin 0.4s ease, border-radius 0.4s ease;
     overflow: hidden;
 }
 
@@ -219,11 +245,16 @@
     flex-grow: 1;
     overflow-y: auto;
     /* Internal scroll */
-    padding: 20px;
+    padding: 10px;
+    width: 100%;
+    /* Stretch to max width */
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    height: 100%;
+    gap: 24px;
+    height: auto;
+    /* Allow flexbox to manage height */
+    min-height: 0;
+    /* Crucial for nested flex scrolling */
     scroll-behavior: smooth;
     background: transparent;
     /* Card handles the white background */
@@ -268,8 +299,12 @@
 
 .chat-message {
     display: flex;
-    gap: 15px;
-    max-width: 85%;
+    gap: 20px;
+    /* Increased gap */
+    max-width: 75%;
+    /* Reduced from 85% prevents super long lines */
+    line-height: 1.6;
+    /* Better readability */
 }
 
 .chat-message.ai {
@@ -290,6 +325,8 @@
     justify-content: center;
     flex-shrink: 0;
     font-size: 1.2rem;
+    margin-top: 5px;
+    /* Alignment fix with text */
 }
 
 /* ... existing ... */
@@ -509,4 +546,231 @@
     100% {
         opacity: 0;
     }
+}
+
+/* Bot Mode Specific Overrides */
+.ai-content-bot-mode {
+    gap: 0 !important;
+    margin: 0 -20px -20px -20px;
+    /* Reset top margin to stop overlap */
+    width: calc(100% + 40px);
+    height: calc(100% + 20px);
+    padding: 20px;
+    overflow: hidden;
+    /* Ensure nothing leaks out */
+}
+
+.ai-content-bot-mode .glass-card.bot-mode-active {
+    padding: 0 !important;
+    margin: 0 !important;
+    /* Force zero margin */
+    overflow: hidden;
+    /* Restore Card Style */
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    box-shadow: var(--card-shadow);
+    height: 100%;
+    /* Fill the container */
+    display: flex;
+    flex-direction: column;
+    gap: 0 !important;
+    /* Critical: Remove gap between chat window and input */
+    justify-content: flex-end;
+    /* ensure input is pushed to bottom */
+}
+
+[data-theme='light'] .ai-content-bot-mode .glass-card.bot-mode-active {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+}
+
+.bot-mode-active .chat-window {
+    padding: 0;
+    margin: 0 !important;
+    /* Force zero margin */
+    border: none !important;
+    /* No secret borders */
+    /* Fully edge-to-edge top to bottom */
+    flex-grow: 1;
+    width: 100%;
+}
+
+.bot-mode-active .chat-message {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.bot-mode-active .chat-message:first-child {
+    margin-top: 20px;
+    /* Space from top edge */
+}
+
+/* Bot Mode Styles */
+.bot-input-area {
+    display: flex;
+    gap: 20px;
+    padding: 20px 30px 15px 30px;
+    /* Tighter bottom padding */
+    background: transparent;
+    /* Seamless blend */
+    backdrop-filter: none;
+    border-top: none;
+    /* No separator line */
+    border-radius: 0 0 24px 24px;
+    align-items: center;
+    margin: 0 !important;
+    /* Force zero margin */
+    width: 100%;
+    position: relative;
+    z-index: 10;
+    margin-top: -1px !important;
+    /* Force slight overlap to kill sub-pixel gaps */
+    flex-shrink: 0;
+}
+
+[data-theme='dark'] .bot-input-area {
+    background: rgba(0, 0, 0, 0.4);
+    /* Darker header/footer barrier */
+}
+
+.bot-text-input {
+    flex-grow: 1;
+    padding: 14px 24px;
+    border-radius: 50px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.bot-text-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    background: var(--bg-secondary);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.bot-text-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.bot-send-btn,
+.bot-mic-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    font-size: 1.2rem;
+}
+
+.bot-send-btn {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.bot-send-btn:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 15px rgba(6, 182, 212, 0.4);
+}
+
+.bot-send-btn:disabled {
+    background: var(--text-secondary);
+    opacity: 0.3;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.bot-send-btn svg {
+    margin-left: 2px;
+}
+
+.bot-mic-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.bot-mic-btn:hover:not(:disabled) {
+    background: rgba(var(--accent-primary-rgb), 0.1);
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.bot-mic-btn.recording {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: var(--error);
+    color: var(--error);
+    animation: pulse-red 1.5s infinite;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+.bot-mode-status {
+    text-align: center;
+    width: 100%;
+}
+
+/* Message Action Buttons (Copy & Manual TTS) */
+.message-actions {
+    position: absolute;
+    bottom: -15px;
+    right: 18px;
+    display: flex;
+    gap: 8px;
+    z-index: 5;
+}
+
+.message-action-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-action-btn:hover {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+    transform: scale(1.1);
+}
+
+.message-action-btn.copy-btn.user {
+    position: absolute;
+    bottom: -15px;
+    left: 18px;
+    /* For user messages, keep on the avatar side or opposite */
+    right: auto;
+}
+
+[data-theme='light'] .message-action-btn {
+    background: #ffffff;
+}
+
+.chat-message.ai {
+    position: relative;
+    margin-bottom: 25px;
+    /* Space for the action buttons below bubbles */
+}
+
+.chat-message.user {
+    position: relative;
+    margin-bottom: 25px;
 }

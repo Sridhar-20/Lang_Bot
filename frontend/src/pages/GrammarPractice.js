@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiArrowLeft, FiAward } from 'react-icons/fi';
+import ReactMarkdown from 'react-markdown';
+import { FiArrowLeft, FiAward, FiSettings, FiCheck, FiCpu } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import PracticeSession from '../components/PracticeSession';
-import SegmentedControl from '../components/SegmentedControl';
+// SegmentedControl removed (using custom UI now)
 import '../styles/Practice.css';
+import '../styles/GrammarVariant.css';
 
 // Simple Diff View Component
 const DiffView = ({ target, spoken }) => {
@@ -63,290 +65,518 @@ const DiffView = ({ target, spoken }) => {
 };
 
 const GrammarPractice = () => {
-  const [question, setQuestion] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [sessionResults, setSessionResults] = useState(null);
-  const [sessionKey, setSessionKey] = useState(0); // Key to force remount
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [difficulty, setDifficulty] = useState('intermediate');
+  // Game State: 'setup' | 'active' | 'summary'
+  const [gameState, setGameState] = useState('setup');
+  
+  // Configuration
+  const [config, setConfig] = useState({
+    level: 'intermediate',
+    questionCount: 5,
+    gender: 'female',
+    accent: 'US' // US, UK, IN
+  });
 
-  const fetchQuestion = async () => {
+  // Session State
+  const [sessionData, setSessionData] = useState({
+    currentQuestionIndex: 0,
+    results: [], // Array of result objects
+    startTime: null
+  });
+
+  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [currentResult, setCurrentResult] = useState(null); // Result for CURRENT question
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [sessionKey, setSessionKey] = useState(0);
+
+  // Computed voice object based on config
+  const [selectedVoice, setSelectedVoice] = useState(null);
+
+  // Load Voice based on Config
+  useEffect(() => {
+    if (gameState !== 'setup') {
+      const loadVoice = () => {
+        const voices = window.speechSynthesis.getVoices();
+        // Heuristic mapping
+        const genderKeywords = config.gender === 'female' ? ['female', 'google', 'samantha'] : ['male', 'daniel'];
+        const langCode = config.accent === 'US' ? 'en-US' : config.accent === 'UK' ? 'en-GB' : 'en-IN';
+        
+        let bestVoice = voices.find(v => v.lang === langCode && v.name.toLowerCase().includes(config.gender));
+        if (!bestVoice) bestVoice = voices.find(v => v.lang === langCode); // Fallback to accent
+        if (!bestVoice) bestVoice = voices.find(v => v.lang.includes('en')); // Fallback to English
+        
+        setSelectedVoice(bestVoice);
+      };
+      loadVoice();
+      window.speechSynthesis.onvoiceschanged = loadVoice;
+    }
+  }, [config, gameState]);
+
+  const startSession = () => {
+    setGameState('active');
+    setSessionData({
+      currentQuestionIndex: 0,
+      results: [],
+      startTime: Date.now()
+    });
+    fetchQuestion(config.level);
+  };
+
+  const fetchQuestion = async (level) => {
     setLoading(true);
-    setSessionResults(null);
-    setSessionKey(prev => prev + 1); // Reset session
+    setCurrentResult(null);
+    setSessionKey(prev => prev + 1);
     try {
-      const response = await fetch(`http://localhost:5000/api/practice/questions/grammar?difficulty=${difficulty}`);
+      const response = await fetch(`http://localhost:5000/api/practice/questions/grammar?difficulty=${level}`);
       const data = await response.json();
-      setQuestion(data);
+      setCurrentQuestion(data);
     } catch (error) {
       console.error('Error fetching question:', error);
-      toast.error('Failed to load sentence. Using offline fallback.');
-      setQuestion({ id: 999, text: "The quick brown fox jumps over the lazy dog." });
+      toast.error('Using offline fallback.');
+      setCurrentQuestion({ id: 999, text: "The quick brown fox jumps over the lazy dog." });
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchQuestion();
-  }, [difficulty]);
-
   const handleSessionComplete = async (data) => {
-    setIsAnalyzing(true);
-    try {
-      // Calculate additional metrics
-      const wordCount = data.transcript.trim().split(/\s+/).length;
-      const wpm = Math.round(wordCount / (data.duration / 60)) || 0;
+    // Store raw data without analyzing yet
+    const rawAnswer = {
+      ...data,
+      question: currentQuestion,
+      timestamp: Date.now()
+    };
 
-      const response = await fetch('http://localhost:5000/api/practice/submit', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ 
-          ...data, 
-          type: 'grammar',
-          question: question, // Explicitly pass the question object
-          wordCount,
-          wpm
-        }),
-      });
-      const results = await response.json();
-      setSessionResults({ ...results, transcript: data.transcript });
-      
-      const history = JSON.parse(localStorage.getItem('practiceHistory') || '[]');
-      history.unshift({
-        id: Date.now(),
-        type: 'Grammar Practice',
-        topic: "Sentence Repetition",
-        score: results.overallScore,
-        date: new Date().toISOString()
-      });
-      localStorage.setItem('practiceHistory', JSON.stringify(history));
-      
-      // Smooth scroll to results
-      setTimeout(() => {
-        document.getElementById('results-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+    setSessionData(prev => ({
+      ...prev,
+      results: [...prev.results, rawAnswer] // Note: 'results' now holds raw data initially
+    }));
 
-    } catch (error) {
-      console.error('Error submitting session:', error);
-      toast.error('Failed to submit session.');
-    } finally {
-      setIsAnalyzing(false);
+    // Auto-advance to next question or finish
+    if (sessionData.currentQuestionIndex < config.questionCount - 1) {
+      handleNextQuestion();
+    } else {
+      finishSession([...sessionData.results, rawAnswer]); // Pass complete list including current
     }
   };
 
-  const startNewSession = () => {
-    fetchQuestion();
+  const handleNextQuestion = () => {
+      setSessionData(prev => ({
+        ...prev,
+        currentQuestionIndex: prev.currentQuestionIndex + 1
+      }));
+      fetchQuestion(config.level);
   };
 
-  if (loading && !question) {
+  const finishSession = async (allRawAnswers) => {
+    setGameState('analyzing');
+    
+    try {
+        // Analyze all answers in parallel
+        const analyzedResults = await Promise.all(allRawAnswers.map(async (answer) => {
+            const wordCount = answer.transcript.trim().split(/\s+/).length;
+            const wpm = Math.round(wordCount / (answer.duration / 60)) || 0;
+
+            try {
+                const response = await fetch('http://localhost:5000/api/practice/submit', {
+                    method: 'POST',
+                    headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ 
+                        ...answer, 
+                        type: 'grammar',
+                        wordCount,
+                        wpm
+                    }),
+                });
+                const result = await response.json();
+                return { ...result, transcript: answer.transcript, question: answer.question };
+            } catch (err) {
+                console.error("Analysis failed for one item:", err);
+                return { ...answer, overallScore: 0, error: true }; // Fallback
+            }
+        }));
+
+        setSessionData(prev => ({
+            ...prev,
+            results: analyzedResults // Replace raw with analyzed
+        }));
+        
+        // Save history
+        const avgScore = Math.round(analyzedResults.reduce((acc, curr) => acc + (curr.overallScore || 0), 0) / analyzedResults.length);
+        const history = JSON.parse(localStorage.getItem('practiceHistory') || '[]');
+        history.unshift({
+            id: Date.now(),
+            type: 'Grammar Session',
+            topic: `${config.level} - ${config.questionCount} Qs`,
+            score: avgScore,
+            date: new Date().toISOString()
+        });
+        localStorage.setItem('practiceHistory', JSON.stringify(history));
+
+        setGameState('summary');
+
+    } catch (error) {
+        console.error("Batch analysis failed:", error);
+        toast.error("Failed to analyze session.");
+        setGameState('summary'); // Show what we have
+    }
+  };
+
+  // --- Rendering ---
+
+  // Wizard State
+  const [activeStep, setActiveStep] = useState(0);
+
+  const steps = [
+      {
+          id: 'level',
+          icon: <FiCheck />,
+          title: "Choose Your Level",
+          subtitle: "Select the difficulty that matches your skills",
+          configKey: 'level',
+          options: [
+              { value: 'basic', label: 'Basic', desc: "Start with fundamentals" },
+              { value: 'intermediate', label: 'Intermediate', desc: "Build on your knowledge" },
+              { value: 'advanced', label: 'Advanced', desc: "Master complex rules" }
+          ]
+      },
+      {
+          id: 'questions',
+          icon: <FiAward />,
+          title: "Session Length",
+          subtitle: "How many questions would you like?",
+          configKey: 'questionCount',
+          options: [
+              { value: 5, label: "Quick", desc: "5 questions" },
+              { value: 10, label: "Standard", desc: "10 questions" },
+              { value: 15, label: "Extended", desc: "15 questions" },
+              { value: 'custom', label: "Custom", desc: "Choose 1-20" } // Custom Option
+          ]
+      },
+      {
+          id: 'accent',
+          icon: <FiCheck />, // Using standard icon as placeholder
+          title: "Voice Accent",
+          subtitle: "Choose your preferred AI voice",
+          configKey: 'accent',
+          options: [
+              { value: 'US', label: "American", desc: "US English" },
+              { value: 'UK', label: "British", desc: "UK English" },
+              { value: 'IN', label: "Indian", desc: "Indian English" }
+          ]
+      },
+      {
+          id: 'gender',
+          icon: <FiCheck />,
+          title: "Voice Type",
+          subtitle: "Select your preferred voice gender",
+          configKey: 'gender',
+          options: [
+              { value: 'female', label: "Female", desc: "Feminine voice" },
+              { value: 'male', label: "Male", desc: "Masculine voice" }
+          ]
+      }
+  ];
+
+  if (gameState === 'setup') {
+    const currentStep = steps[activeStep];
+    
+    // Handler for custom question change
+    const handleCustomChange = (e) => {
+        setConfig({ ...config, questionCount: parseInt(e.target.value) });
+    };
+
     return (
-      <div className="container" style={{ paddingTop: '100px', textAlign: 'center' }}>
-        <h2>Loading Sentence...</h2>
+      <div className="grammar-setup-wrapper">
+         {/* Background Orbs */}
+         <div className="floating-orb" style={{ width: '400px', height: '400px', background: 'var(--grammar-primary)', top: '-100px', left: '-100px' }} />
+
+         <div className="floating-orb" style={{ width: '200px', height: '200px', background: 'var(--grammar-secondary)', top: '40%', left: '60%', animationDelay: '4s' }} />
+         <div className="bg-grid-pattern" />
+
+         <div className="back-link-wrapper">
+             <Link to="/" className="back-link">
+                 <FiArrowLeft /> Back to Home
+             </Link>
+         </div>
+
+         <div className="wizard-container">
+             {/* Progress Steps */}
+             <div className="step-indicator-container">
+                 {steps.map((step, idx) => (
+                     <button 
+                        key={idx}
+                        className={`step-indicator-btn ${idx === activeStep ? 'active' : ''} ${idx < activeStep ? 'completed' : ''}`}
+                        onClick={() => setActiveStep(idx)}
+                     >
+                         {idx < activeStep ? <FiCheck /> : idx + 1}
+                     </button>
+                 ))}
+             </div>
+
+             <AnimatePresence mode="wait">
+                 <motion.div
+                    key={activeStep}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                 >
+                     <div className="wizard-header">
+                         <h1 className="wizard-title">{currentStep.title}</h1>
+                         <p className="wizard-subtitle">{currentStep.subtitle}</p>
+                     </div>
+
+                     <div className={`wizard-grid ${currentStep.options.length === 2 ? 'two-cols' : ''} ${currentStep.options.length === 4 ? 'four-cols' : ''}`}>
+                         {currentStep.options.map((opt) => {
+                             const isSelected = currentStep.configKey === 'questionCount' 
+                                ? (opt.value === 'custom' ? config.questionCount > 15 || (config.questionCount !== 5 && config.questionCount !== 10 && config.questionCount !== 15) : config.questionCount === opt.value)
+                                : config[currentStep.configKey] === opt.value;
+                             
+                             return (
+                                 <div 
+                                    key={opt.value} 
+                                    className={`wizard-option-card ${isSelected ? 'selected' : ''}`}
+                                    onClick={() => {
+                                        if (opt.value !== 'custom') {
+                                            setConfig({ ...config, [currentStep.configKey]: opt.value });
+                                        } else {
+                                            // Set a default custom value if not already set custom
+                                            if (!isSelected) setConfig({ ...config, questionCount: 1 });
+                                        }
+                                    }}
+                                 >
+                                     <span className="wizard-option-title">{opt.label}</span>
+                                     <span className="wizard-option-desc">{opt.desc}</span>
+                                     <div className="check-indicator"><FiCheck /></div>
+                                     
+                                     {/* Custom Dropdown Logic */}
+                                     {opt.value === 'custom' && isSelected && (
+                                         <div className="custom-dropdown-container" onClick={(e) => e.stopPropagation()}>
+                                             <select 
+                                                className="custom-select" 
+                                                value={config.questionCount} 
+                                                onChange={handleCustomChange}
+                                             >
+                                                 {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
+                                                     <option key={num} value={num}>{num} Questions</option>
+                                                 ))}
+                                             </select>
+                                         </div>
+                                     )}
+                                 </div>
+                             );
+                         })}
+                     </div>
+                 </motion.div>
+             </AnimatePresence>
+
+             {/* Navigation Actions */}
+             <div className="wizard-nav">
+                 {activeStep > 0 && (
+                     <button className="nav-btn nav-btn-prev" onClick={() => setActiveStep(prev => prev - 1)}>
+                         Previous
+                     </button>
+                 )}
+                 
+                 {activeStep < steps.length - 1 ? (
+                     <button className="nav-btn nav-btn-next" onClick={() => setActiveStep(prev => prev + 1)}>
+                         Continue
+                     </button>
+                 ) : (
+                     <button className="nav-btn nav-btn-start" onClick={startSession}>
+                         <FiCpu /> Start Practice
+                     </button>
+                 )}
+             </div>
+         </div>
       </div>
     );
   }
 
-  return (
-    <div className="container" style={{ paddingTop: '80px' }}>
-      {/* Practice Section - Always Visible */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)' }}>
-            <FiArrowLeft /> Back to Home
-          </Link>
-          <h1 className="gradient-text">Grammar Practice</h1>
-        </div>
-        
-        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
-          <SegmentedControl
-            options={[
-              { value: 'basic', label: 'Basic' },
-              { value: 'intermediate', label: 'Intermediate' },
-              { value: 'advanced', label: 'Advanced' }
-            ]}
-            value={difficulty}
-            onChange={setDifficulty}
-          />
-        </div>
-        
-        {question && (
-          <PracticeSession 
-            key={sessionKey}
-            practiceType="grammar"
-            question={question}
-            onNewQuestion={fetchQuestion}
-            onSessionComplete={handleSessionComplete}
-            isAnalyzing={isAnalyzing}
-          />
-        )}
-      </motion.div>
-
-      {/* Results Section - Appears Below */}
-      {sessionResults && (
-        <motion.div
-          id="results-section"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          style={{ marginTop: '60px', paddingTop: '40px', borderTop: '2px solid var(--border-color)' }}
-        >
-          <div className="results-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px', background: 'var(--bg-secondary)', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-              <FiAward style={{ fontSize: '4rem', color: 'var(--accent-secondary)', marginBottom: '20px' }} />
-              <h2 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Practice Complete!</h2>
-            </div>
-
-            {/* Diff View Comparison */}
-            <DiffView target={question?.text} spoken={sessionResults.transcript} />
-
-            {/* Grammar Metrics - Only show for grammar practice */}
-            {sessionResults.grammarMetrics && (
-              <div style={{ background: 'rgba(0, 212, 255, 0.05)', padding: '30px', borderRadius: '20px', marginBottom: '30px', border: '1px solid var(--accent-primary)' }}>
-                <h3 style={{ marginBottom: '25px', display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-primary)' }}>
-                  📊 Performance Metrics
-                </h3>
-                
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                  {/* Accuracy Score */}
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '10px', color: sessionResults.grammarMetrics.accuracyScore >= 90 ? 'var(--success)' : sessionResults.grammarMetrics.accuracyScore >= 70 ? 'var(--warning)' : 'var(--error)' }}>
-                      {sessionResults.grammarMetrics.accuracyScore}%
-                    </div>
-                    <div style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '10px' }}>Accuracy</div>
-                    <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>
-                      {sessionResults.grammarMetrics.details.correctWords}/{sessionResults.grammarMetrics.details.totalWords} words correct
-                    </div>
-                  </div>
-
-                  {/* Fluency Rating */}
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '10px', color: sessionResults.grammarMetrics.fluencyRating >= 90 ? 'var(--success)' : sessionResults.grammarMetrics.fluencyRating >= 70 ? 'var(--warning)' : 'var(--error)' }}>
-                      {sessionResults.grammarMetrics.fluencyRating}%
-                    </div>
-                    <div style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '10px' }}>Fluency</div>
-                    <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>
-                      {sessionResults.grammarMetrics.details.fillerCount} fillers, {sessionResults.grammarMetrics.details.repeatCount} repeats
-                    </div>
-                  </div>
-
-                  {/* Pronunciation Score */}
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '10px', color: sessionResults.grammarMetrics.pronunciationScore >= 90 ? 'var(--success)' : sessionResults.grammarMetrics.pronunciationScore >= 70 ? 'var(--warning)' : 'var(--error)' }}>
-                      {sessionResults.grammarMetrics.pronunciationScore}%
-                    </div>
-                    <div style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '10px' }}>Pronunciation</div>
-                    <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>
-                      Estimated clarity
-                    </div>
-                  </div>
-
-                  {/* Speed Score */}
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '10px', color: sessionResults.grammarMetrics.speedScore >= 90 ? 'var(--success)' : sessionResults.grammarMetrics.speedScore >= 70 ? 'var(--warning)' : 'var(--error)' }}>
-                      {sessionResults.grammarMetrics.speedScore}%
-                    </div>
-                    <div style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '10px' }}>Speed</div>
-                    <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>
-                      {sessionResults.grammarMetrics.wpm} WPM (ideal: 120-150)
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Main Score & Fluency Breakdown - HIDDEN for Grammar Practice as per user request */}
-            {!sessionResults.grammarMetrics && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px', marginBottom: '40px' }}>
-              <div className="score-card" style={{ background: 'rgba(168, 85, 247, 0.1)', padding: '30px', borderRadius: '20px', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <h3 style={{ color: 'var(--accent-secondary)', fontSize: '4rem', fontWeight: '800', margin: 0 }}>{sessionResults.overallScore}</h3>
-                <p style={{ fontSize: '1.2rem', opacity: 0.8 }}>Overall Score</p>
-              </div>
+  // Active Session View
+  if (gameState === 'active') {
+      return (
+        <div className="grammar-page-wrapper" style={{ paddingTop: '40px', paddingBottom: '40px', paddingLeft: '20px', paddingRight: '20px' }}>
+          
+           {/* Header & Stepper */}
+           <div style={{ maxWidth: '1200px', margin: '0 auto 30px auto' }}>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                {sessionResults.fluencyBreakdown && Object.entries(sessionResults.fluencyBreakdown).map(([key, value]) => (
-                  <div key={key} className="stat-item" style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px' }}>
-                    <h4 style={{ textTransform: 'capitalize', marginBottom: '8px', fontSize: '0.9rem', opacity: 0.8 }}>{key.replace(/([A-Z])/g, ' $1').trim()}</h4>
-                    <div className="progress-bar" style={{ height: '8px', background: 'rgba(255,255,255,0.1)' }}>
-                      <div style={{ 
-                        width: `${value}%`, 
-                        height: '100%', 
-                        borderRadius: '4px',
-                        background: value > 80 ? 'var(--success)' : value > 60 ? 'var(--warning)' : 'var(--error)' 
-                      }}></div>
-                    </div>
-                    <span style={{ display: 'block', textAlign: 'right', marginTop: '5px', fontWeight: 'bold' }}>{value}%</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <button onClick={() => setGameState('setup')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--grammar-text-secondary)' }}>
+                     <FiArrowLeft /> Exit
+                  </button>
+                  <div style={{ fontWeight: 'bold', color: 'var(--grammar-accent)' }}>
+                      Level: {config.level.toUpperCase()}
                   </div>
-                ))}
               </div>
-            </div>
-            )}
 
-            {/* Grammar Errors */}
-            {sessionResults.grammarErrors && sessionResults.grammarErrors.length > 0 && (
-              <div style={{ marginBottom: '30px' }}>
-                <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '10px', marginBottom: '20px' }}>Grammar Corrections</h3>
-                <div style={{ display: 'grid', gap: '15px' }}>
-                  {sessionResults.grammarErrors.map((error, idx) => (
-                    <div key={idx} style={{ background: 'rgba(239, 68, 68, 0.1)', padding: '15px', borderRadius: '12px', borderLeft: '4px solid var(--error)' }}>
-                      <div style={{ display: 'flex', gap: '10px', marginBottom: '5px' }}>
-                        <span style={{ color: 'var(--error)', textDecoration: 'line-through', opacity: 0.7 }}>{error.original}</span>
-                        <span style={{ color: 'var(--success)', fontWeight: 'bold' }}>→ {error.corrected}</span>
-                      </div>
-                      <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>{error.rule}</p>
-                    </div>
+              {/* Progress Stepper */}
+              <div className="progress-stepper">
+                  {Array.from({ length: config.questionCount }).map((_, idx) => (
+                      <React.Fragment key={idx}>
+                          <div className={`step-circle ${idx === sessionData.currentQuestionIndex ? 'active' : ''} ${idx < sessionData.currentQuestionIndex ? 'completed' : ''}`}>
+                              {idx < sessionData.currentQuestionIndex ? <FiCheck /> : idx + 1}
+                          </div>
+                          {idx < config.questionCount - 1 && (
+                              <div className={`step-line ${idx < sessionData.currentQuestionIndex ? 'filled' : ''}`} />
+                          )}
+                      </React.Fragment>
                   ))}
+              </div>
+           </div>
+
+           {/* Main Practice Area */}
+           <AnimatePresence mode="wait">
+            {!loading && currentQuestion ? (
+                <motion.div
+                    key={sessionKey}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                >
+                    <PracticeSession 
+                        key={sessionKey}
+                        practiceType="grammar"
+                        variant="grammar"
+                        question={currentQuestion}
+                        onNewQuestion={() => {}} // Disabled in this mode
+                        onSessionComplete={handleSessionComplete}
+                        isAnalyzing={isAnalyzing}
+                        externalVoice={selectedVoice} // Pass computed voice
+                    />
+                </motion.div>
+            ) : (
+                <div style={{ textAlign: 'center', padding: '100px', color: 'var(--grammar-text-secondary)' }}>
+                    Loading question...
                 </div>
-              </div>
             )}
+           </AnimatePresence>
 
-            {/* Pronunciation & Improvements */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '30px' }}>
-              <div>
-                <h3 style={{ marginBottom: '15px', color: 'var(--accent-primary)' }}>Pronunciation Tips</h3>
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                  {sessionResults.pronunciationTips?.map((tip, i) => (
-                    <li key={i} style={{ marginBottom: '10px', paddingLeft: '20px', position: 'relative' }}>
-                      <span style={{ position: 'absolute', left: 0, color: 'var(--accent-primary)' }}>•</span>
-                      {tip}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 style={{ marginBottom: '15px', color: 'var(--success)' }}>Strengths</h3>
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                  {sessionResults.strengths?.map((strength, i) => (
-                    <li key={i} style={{ marginBottom: '10px', paddingLeft: '20px', position: 'relative' }}>
-                      <span style={{ position: 'absolute', left: 0, color: 'var(--success)' }}>✓</span>
-                      {strength}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+           {/* Feedback & Next Button (Only when result exists) */}
+           {/* Feedback Section Removed - Auto-advances now */}
+           
+           {/* Analyzing Overlay */}
+           {gameState === 'analyzing' && (
+               <motion.div 
+                 initial={{ opacity: 0 }} 
+                 animate={{ opacity: 1 }}
+                 style={{ 
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+                    background: 'rgba(0,0,0,0.8)', zIndex: 100,
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+                 }}>
+                   <FiCpu className="spin" style={{ fontSize: '4rem', color: 'var(--grammar-accent)', marginBottom: '20px' }} />
+                   <h2 style={{ color: 'white' }}>Analyzing Full Session...</h2>
+                   <p style={{ color: 'var(--grammar-text-secondary)' }}>Processing {config.questionCount} answers</p>
+               </motion.div>
+           )}
+        </div>
+      );
+  }
 
-            {/* Overall Feedback */}
-            <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '24px', borderRadius: '16px', marginBottom: '30px' }}>
-              <h3>Coach's Feedback</h3>
-              <p style={{ marginTop: '10px', lineHeight: '1.6', color: 'var(--text-secondary)' }}>{sessionResults.overallFeedback}</p>
-            </div>
+  // Summary View
+  if (gameState === 'summary') {
+      const avgScore = Math.round(sessionData.results.reduce((acc, curr) => acc + (curr.overallScore || 0), 0) / sessionData.results.length);
+      
+      return (
+         <div className="grammar-page-wrapper" style={{ paddingTop: '40px', paddingBottom: '60px' }}>
+            <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+                
+                {/* Header Card */}
+                <div className="setup-card" style={{ textAlign: 'center', marginBottom: '40px' }}>
+                    <FiAward size={64} color="var(--grammar-accent)" style={{ marginBottom: '20px' }} />
+                    <h1 style={{ marginBottom: '10px' }}>Session Complete!</h1>
+                    <div style={{ fontSize: '4rem', fontWeight: '800', color: 'var(--grammar-accent)', marginBottom: '5px' }}>
+                        {avgScore}%
+                    </div>
+                    <div style={{ marginBottom: '30px', color: 'var(--grammar-text-secondary)' }}>Average Session Score</div>
+                    
+                    <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+                        <button className="start-session-btn" style={{ width: 'auto', padding: '12px 30px', margin: 0 }} onClick={() => setGameState('setup')}>
+                            Start New Session
+                        </button>
+                        <Link to="/dashboard" className="secondary-btn" style={{ 
+                            padding: '12px 30px', 
+                            borderRadius: '12px', 
+                            border: '1px solid var(--grammar-border)',
+                            color: 'var(--grammar-text-secondary)',
+                            textDecoration: 'none',
+                            background: 'transparent'
+                        }}>
+                            Dashboard
+                        </Link>
+                    </div>
+                </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-              <button onClick={startNewSession} className="neon-button">Next Sentence</button>
-              <Link to="/dashboard" className="neon-button-outline">Go to Dashboard</Link>
+                {/* Detailed Breakdown */}
+                <h2 style={{ marginBottom: '20px', paddingLeft: '10px' }}>Detailed Breakdown</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+                    {sessionData.results.map((result, idx) => (
+                        <div key={idx} style={{ 
+                            background: 'var(--grammar-card-bg)', 
+                            border: '1px solid var(--grammar-border)', 
+                            borderRadius: '20px', 
+                            padding: '30px',
+                            position: 'relative',
+                            overflow: 'hidden'
+                        }}>
+                            <div style={{ 
+                                position: 'absolute', top: 0, left: 0, 
+                                background: 'var(--grammar-border)', 
+                                padding: '5px 15px', 
+                                borderBottomRightRadius: '16px',
+                                fontSize: '0.9rem',
+                                fontWeight: 'bold',
+                                color: 'var(--grammar-text-secondary)'
+                            }}>
+                                Question {idx + 1}
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '15px', marginBottom: '20px' }}>
+                                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                                    Score: <span style={{ color: result.overallScore > 80 ? 'var(--grammar-success)' : 'var(--grammar-accent)' }}>{result.overallScore}%</span>
+                                </div>
+                            </div>
+
+                            <DiffView target={result.question?.text} spoken={result.transcript} />
+
+                            {result.grammarErrors?.length > 0 ? (
+                                <div style={{ marginTop: '20px', padding: '20px', background: 'rgba(229, 62, 62, 0.05)', borderRadius: '16px', border: '1px solid rgba(229, 62, 62, 0.2)' }}>
+                                    <h4 style={{ margin: '0 0 15px 0', color: 'var(--grammar-error)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <FiSettings /> Corrections Needed
+                                    </h4>
+                                    {result.grammarErrors.map((err, i) => (
+                                        <div key={i} style={{ marginBottom: '10px', paddingBottom: '10px', borderBottom: i < result.grammarErrors.length - 1 ? '1px solid rgba(0,0,0,0.1)' : 'none' }}>
+                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'baseline' }}>
+                                                <span style={{ textDecoration: 'line-through', color: 'var(--grammar-error)', opacity: 0.8 }}>{err.original}</span>
+                                                <span style={{ color: 'var(--grammar-text-secondary)' }}>→</span>
+                                                <span style={{ fontWeight: 'bold', color: 'var(--grammar-success)' }}>{err.corrected}</span>
+                                            </div>
+                                            <p style={{ margin: '5px 0 0 0', fontSize: '0.9rem', color: 'var(--grammar-text-secondary)', fontStyle: 'italic' }}>
+                                                {err.rule}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(72, 187, 120, 0.1)', borderRadius: '12px', color: 'var(--grammar-success)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <FiCheck /> Perfect! No grammar errors found.
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
-          </div>
-        </motion.div>
-      )}
-    </div>
-  );
+         </div>
+      );
+  }
+
+  return null;
 };
 
 export default GrammarPractice;

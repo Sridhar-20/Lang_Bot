@@ -63,15 +63,23 @@ const readData = (filename) => {
     }
 };
 
-// Initialize Gemini
+// Initialize Gemini (Stored as comments per request)
+/*
 const API_KEY = process.env.GEMINI_API_KEY;
-const INTERVIEW_API_KEY = process.env.GEMINI_INTERVIEW_KEY || API_KEY; // Fallback to main key
+const INTERVIEW_API_KEY = process.env.GEMINI_INTERVIEW_KEY || API_KEY;
 
 if (!API_KEY) {
     console.error("CRITICAL ERROR: GEMINI_API_KEY is not set in environment variables.");
 }
+*/
+
+// Initialize Groq
+const Groq = require("groq-sdk");
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const GROQ_MODEL = "llama-3.3-70b-versatile"; // High-quality model for interview/chat
 
 // Helper to call Gemini API via fetch (bypassing SDK issues)
+/*
 const callGemini = async (modelName, prompt, specificKey = null) => {
     const keyToUse = specificKey || API_KEY;
     
@@ -112,6 +120,35 @@ const callGemini = async (modelName, prompt, specificKey = null) => {
         throw error;
     }
 };
+*/
+
+// Helper to call Groq API
+const callGroq = async (prompt, systemPrompt = "You are a helpful assistant.") => {
+    const startTime = Date.now();
+    try {
+        const chatCompletion = await groq.chat.completions.create({
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: prompt }
+            ],
+            model: GROQ_MODEL,
+        });
+
+        const duration = Date.now() - startTime;
+        const logEntry = `[${new Date().toISOString()}] Groq Model: ${GROQ_MODEL} | Duration: ${duration}ms\n`;
+        fs.appendFileSync(path.join(__dirname, 'server_timing.log'), logEntry);
+
+        return chatCompletion.choices[0].message.content;
+    } catch (error) {
+        const duration = Date.now() - startTime;
+        const logEntry = `[${new Date().toISOString()}] ERROR Groq Model: ${GROQ_MODEL} | Duration: ${duration}ms | Error: ${error.message}\n`;
+        fs.appendFileSync(path.join(__dirname, 'server_timing.log'), logEntry);
+        
+        console.error(`\n🔴 Groq API Error:`);
+        console.error(`   Message: ${error.message}`);
+        throw error;
+    }
+};
 
 // In-memory caches
 let topicCache = [];
@@ -120,9 +157,20 @@ let grammarCache = {
     intermediate: [],
     advanced: []
 };
+let listeningCache = {
+    conversation: { basic: [], intermediate: [], advanced: [] },
+    story: { basic: [], intermediate: [], advanced: [] }
+};
+let readingCache = {
+    basic: [],
+    intermediate: [],
+    advanced: []
+};
 
 const GRAMMAR_BATCH_SIZE = 40;
 const TOPIC_BATCH_SIZE = 20;
+const LISTENING_BATCH_SIZE = 3;
+const READING_BATCH_SIZE = 3;
 const CACHE_FILE = path.join(__dirname, 'data', 'persistent_cache.json');
 
 // Helper to save cache to disk
@@ -130,7 +178,9 @@ const saveCache = () => {
     try {
         const cacheData = {
             topicCache,
-            grammarCache
+            grammarCache,
+            listeningCache,
+            readingCache
         };
         fs.writeFileSync(CACHE_FILE, JSON.stringify(cacheData, null, 2));
         // console.log("💾 Cache saved to disk."); // Optional: uncomment for verbose logging
@@ -146,84 +196,165 @@ const loadCache = () => {
             const data = fs.readFileSync(CACHE_FILE, 'utf8');
             const cacheData = JSON.parse(data);
             
-            if (cacheData.topicCache) topicCache = cacheData.topicCache;
-            if (cacheData.grammarCache) grammarCache = cacheData.grammarCache;
+            if (cacheData.topicCache && Array.isArray(cacheData.topicCache)) {
+                topicCache = cacheData.topicCache;
+            }
+            
+            if (cacheData.grammarCache) {
+                // Ensure all difficulty properties exist to prevent crashes
+                if (Array.isArray(cacheData.grammarCache.basic)) grammarCache.basic = cacheData.grammarCache.basic;
+                if (Array.isArray(cacheData.grammarCache.intermediate)) grammarCache.intermediate = cacheData.grammarCache.intermediate;
+                if (Array.isArray(cacheData.grammarCache.advanced)) grammarCache.advanced = cacheData.grammarCache.advanced;
+            }
+
+            if (cacheData.listeningCache) {
+                const safeLoad = (target, source) => {
+                    if (source?.basic && Array.isArray(source.basic)) target.basic = source.basic;
+                    if (source?.intermediate && Array.isArray(source.intermediate)) target.intermediate = source.intermediate;
+                    if (source?.advanced && Array.isArray(source.advanced)) target.advanced = source.advanced;
+                };
+                if (cacheData.listeningCache.conversation) safeLoad(listeningCache.conversation, cacheData.listeningCache.conversation);
+                if (cacheData.listeningCache.story) safeLoad(listeningCache.story, cacheData.listeningCache.story);
+            }
+
+            if (cacheData.readingCache) {
+                if (Array.isArray(cacheData.readingCache.basic)) readingCache.basic = cacheData.readingCache.basic;
+                if (Array.isArray(cacheData.readingCache.intermediate)) readingCache.intermediate = cacheData.readingCache.intermediate;
+                if (Array.isArray(cacheData.readingCache.advanced)) readingCache.advanced = cacheData.readingCache.advanced;
+            }
             
             console.log(`📂 Loaded cache from disk:`);
             console.log(`   - Topics: ${topicCache.length}`);
             console.log(`   - Grammar: Basic(${grammarCache.basic.length}), Inter(${grammarCache.intermediate.length}), Adv(${grammarCache.advanced.length})`);
+            console.log(`   - Listening: ${listeningCache.conversation.intermediate.length} convs`);
+            console.log(`   - Reading: ${readingCache.intermediate.length} passages`);
         }
     } catch (error) {
-        console.error("Failed to load cache:", error.message);
+        console.error("Failed to load cache (defaulting to empty):", error.message);
+        // Ensure caches are in valid state even on failure
+        topicCache = [];
+        grammarCache = { basic: [], intermediate: [], advanced: [] };
+        listeningCache = { conversation: { basic: [], intermediate: [], advanced: [] }, story: { basic: [], intermediate: [], advanced: [] } };
+        readingCache = { basic: [], intermediate: [], advanced: [] };
     }
 };
 
 // Load cache on startup
 loadCache();
 
-// Helper to generate content using Gemini
-const generateBatch = async (type, count, difficulty = 'intermediate') => {
-    if (!API_KEY) {
-        console.error("Skipping generation: No API Key available.");
+// Helper to generate content using Groq (Gemini logic preserved in comments)
+const generateBatch = async (type, count, difficulty = 'intermediate', subtype = 'conversation') => {
+    if (!process.env.GROQ_API_KEY) {
+        console.error("Skipping generation: No Groq API Key available.");
         return [];
     }
 
     console.log(`Generating new batch of ${count} ${type} questions (Difficulty: ${difficulty})...`);
     
-    const generateWithModel = async (modelName) => {
+    // ... [Gemini commented out code preserved] ...
+
+    const generateWithGroq = async () => {
         try {
             let prompt = "";
             if (type === 'grammar') {
                 let difficultyDesc = "";
                 switch(difficulty) {
-                    case 'basic':
-                        difficultyDesc = "simple, short sentences suitable for beginners (A1-A2 level). Focus on basic tenses (present simple, past simple) and common vocabulary.";
-                        break;
-                    case 'advanced':
-                        difficultyDesc = "complex, sophisticated sentences suitable for advanced learners (C1-C2 level). Include nuanced grammar, idioms, mixed conditionals, and advanced vocabulary.";
-                        break;
-                    case 'intermediate':
-                    default:
-                        difficultyDesc = "moderately complex sentences suitable for intermediate learners (B1-B2 level). Include compound sentences and a variety of standard tenses.";
-                        break;
+                    case 'basic': difficultyDesc = "simple, short sentences suitable for beginners (A1-A2 level)."; break;
+                    case 'advanced': difficultyDesc = "complex, sophisticated sentences suitable for advanced learners (C1-C2 level)."; break;
+                    case 'intermediate': default: difficultyDesc = "moderately complex sentences suitable for intermediate learners (B1-B2 level)."; break;
                 }
 
-                prompt = `Generate ${count} unique, diverse English sentences for grammar practice. 
-                They should be ${difficultyDesc}
-                Return ONLY a JSON array of objects with this structure: [{"id": 1, "text": "Sentence here"}, ...]
-                Do not include markdown formatting.`;
+                prompt = `Generate ${count} unique, diverse English sentences for grammar practice. They should be ${difficultyDesc} Return ONLY a JSON array of objects with this structure: [{"id": 1, "text": "Sentence here"}, ...] Do not include markdown formatting or any other text.`;
             } else if (type === 'topic') {
-                prompt = `Generate ${count} interesting, open-ended discussion topics for English speaking practice.
-                They should cover various themes like technology, society, personal growth, travel, etc.
-                Return ONLY a JSON array of objects with this structure: [{"id": 1, "text": "Topic question here"}, ...]
+                prompt = `Generate ${count} interesting, open-ended discussion topics for English speaking practice. They should cover various themes like technology, society, personal growth, travel, etc. Return ONLY a JSON array of objects with this structure: [{"id": 1, "text": "Topic question here"}, ...] Do not include markdown formatting or any other text.`;
+            } else if (type === 'listening') {
+                 const isConv = subtype === 'conversation';
+                 // Strict length + Detail-rich instructions
+                 const lenDesc = "Strictly 120-160 words (approx 40-60 seconds when spoken/read).";
+                 const qDesc = "strictly 6-8 diverse comprehension questions (mix of specific details and general understanding)";
+                 
+                 if (isConv) {
+                    prompt = `Generate ${count} diverse, detail-rich English conversation scripts for listening practice.
+                    
+                    REQUIREMENTS:
+                    - Length: ${lenDesc} DO NOT make it shorter than 120 words.
+                    - Difficulty: ${difficulty} (CEFR B1-B2).
+                    - Content: Include specific details (names, times, places, numbers, prices) to make the comprehension questions meaningful.
+                    - Format: A natural dialogue between 2-3 people.
+                    - Questions: ${qDesc}.
+        
+                    Return ONLY a valid JSON ARRAY of objects. Each object must have this structure:
+                    {
+                        "type": "conversation",
+                        "title": "Creative Title Here",
+                        "script": [
+                            { "speaker": "Name", "text": "Line of dialogue" },
+                            ...
+                        ],
+                        "questions": [
+                            { "id": 1, "question": "Q?", "options": ["A","B","C","D"], "answer": "A", "explanation": "Why" }
+                        ]
+                    }
+                    Do not use markdown formatting.`;
+                 } else {
+                     prompt = `Generate ${count} short, interesting English stories or articles for reading/listening practice.
+                    
+                    REQUIREMENTS:
+                    - Length: ${lenDesc} DO NOT make it shorter than 120 words.
+                    - Difficulty: ${difficulty} (CEFR B1-B2).
+                    - Content: Include specific details (dates, sequence of events, descriptive attributes) to support detailed questions.
+                    - Questions: ${qDesc}.
+        
+                    Return ONLY a valid JSON ARRAY of objects. Each object must have this structure:
+                    {
+                        "type": "story",
+                        "title": "Topic Title",
+                        "content": "Full story text...",
+                        "questions": [
+                            { "id": 1, "question": "Q?", "options": ["A","B","C","D"], "answer": "A", "explanation": "Why" }
+                        ]
+                    }
+                    Do not include markdown.`;
+                 }
+            } else if (type === 'reading') {
+                prompt = `Generate ${count} interesting, detailed English comprehension passages.
+                
+                REQUIREMENTS:
+                - Length: Strictly 350-400 words per passage.
+                - Difficulty: ${difficulty} (CEFR B1-C1).
+                - Content: Engaging articles or stories on varied topics (science, culture, history, fiction).
+                - Questions: Strictly 6-8 multiple-choice or short-answer comprehension questions per passage.
+                
+                Return ONLY a valid JSON ARRAY of objects. Each object must have this structure:
+                {
+                    "type": "reading",
+                    "title": "Passage Title",
+                    "content": "Full text of the passage (350-400 words)...",
+                    "questions": [
+                        { "id": 1, "question": "Q?", "options": ["A","B","C","D"], "answer": "A", "explanation": "Why" }
+                    ]
+                }
                 Do not include markdown formatting.`;
             }
 
-            const text = await callGemini(modelName, prompt);
+            const text = await callGroq(prompt, "You are a professional English content developer. Always return valid, minified JSON only.");
             const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
-            return JSON.parse(jsonStr);
+            // Robust extraction for arrays
+            const firstBracket = jsonStr.indexOf('[');
+            const lastBracket = jsonStr.lastIndexOf(']');
+            let cleanJson = jsonStr;
+            if (firstBracket !== -1 && lastBracket !== -1) {
+                cleanJson = jsonStr.substring(firstBracket, lastBracket + 1);
+            }
+            
+            return JSON.parse(cleanJson);
         } catch (error) {
-            console.warn(`Failed with model ${modelName}:`, error.message);
-            throw error;
+            console.error(`Error generating ${type} batch:`, error.message);
+            return [];
         }
     };
 
-    try {
-        const result = await generateWithModel("gemini-2.5-flash");
-        return result;
-    } catch (error) {
-        console.log("⚠️  gemini-2.5-flash failed, falling back to gemini-2.5-pro...");
-        console.log("   Error:", error.message);
-        try {
-            const result = await generateWithModel("gemini-2.5-pro");
-            return result;
-        } catch (fallbackError) {
-            console.error(`❌ Error generating ${type} batch after fallback:`);
-            console.error(`   Model: gemini-2.5-pro`);
-            console.error(`   Error: ${fallbackError.message}`);
-            return [];
-        }
-    }
+    return await generateWithGroq();
 };
 
 // Routes
@@ -233,7 +364,7 @@ app.get('/api/practice/questions/topic', async (req, res) => {
         if (newBatch.length > 0) {
             topicCache = newBatch;
             saveCache(); // Save after generating
-            console.log(`✅ Generated ${newBatch.length} NEW topics from Gemini API`);
+            console.log(`✅ Generated ${newBatch.length} NEW topics from API`);
         } else {
             // Fallback to local file if generation fails
             topicCache = readData('topics.json');
@@ -259,7 +390,7 @@ app.get('/api/practice/questions/grammar', async (req, res) => {
         if (newBatch.length > 0) {
             grammarCache[difficulty] = newBatch;
             saveCache(); // Save after generating
-            console.log(`✅ Generated ${newBatch.length} NEW ${difficulty} grammar sentences from Gemini API`);
+            console.log(`✅ Generated ${newBatch.length} NEW ${difficulty} grammar sentences from API`);
         } else {
             // Fallback to local file if generation fails - filter by difficulty if possible, or just return generic
             // For now, we'll just return generic fallback
@@ -334,13 +465,99 @@ app.get('/api/practice/questions/interview', (req, res) => {
     res.json(randomInterview);
 });
 
-// Conversational Interview Endpoint
+// General AI Bot Endpoint
+app.post('/api/bot/chat', async (req, res) => {
+    const { history, userResponse } = req.body;
+    
+    // Use the Groq Key
+    if (!process.env.GROQ_API_KEY) {
+        return res.status(500).json({ error: 'Server misconfigured: Missing Groq API Key' });
+    }
+
+    try {
+        let prompt = `
+You are LAGUA AI, a smart, friendly, and human-like AI assistant designed for language learning and general knowledge.
+
+ROLE:
+You act exactly like a general-purpose AI (similar to ChatGPT) with a strong focus on language learning.
+
+WHAT USERS CAN ASK:
+- Grammar explanations
+- Sentence corrections
+- Vocabulary questions
+- Language translation
+- Daily-life questions
+- Academic questions
+- Mathematical problems
+- Social, technical, or random questions on ANY topic
+
+RESPONSE RULES:
+- Answer ALL types of questions naturally and accurately.
+- USE MARKDOWN FOR READABILITY:
+  - Use **bold text** for key terms or emphasis.
+  - Use bullet points (*) or numbered lists (1.) for steps and lists.
+  - Use code blocks (\x60\x60\x60) for code or technical syntax.
+  - Use clear line breaks between paragraphs.
+- For grammar/language questions:
+  - Break explanations into clear sections: **Explanation**, **Correction**, **Examples**.
+  - Use a list format for step-by-step guides.
+- For non-language questions:
+  - Answer clearly with structured paragraphs and headers where appropriate.
+
+TONE & STYLE:
+- Friendly, Calm, Supportive, Human-like.
+- Never judgmental.
+- FOR SIMPLE QUESTIONS: Keep responses concise (2-4 sentences).
+- FOR COMPLEX EXPLANATIONS: Use structured lists and sections to ensure the user isn't overwhelmed by a wall of text.
+
+CONVERSATION HISTORY:
+`;
+        // Append history
+        (history || []).forEach(msg => {
+            prompt += `${msg.role === 'ai' ? 'Lagua' : 'User'}: ${msg.text}\n`;
+        });
+
+        if (userResponse) {
+            prompt += `User: ${userResponse}\n`;
+        } else if (req.body.start) {
+            prompt += `
+SYSTEM INSTRUCTION: This is the start of the conversation.
+Generate a friendly, brief greeting welcoming the user to LanguaBot.
+`;
+        }
+
+        prompt += `Lagua:`;
+
+        /*
+        // Gemini Implementation (Preserved in comments)
+        let responseText;
+        try {
+            responseText = await callGemini("gemini-2.5-flash", prompt, INTERVIEW_API_KEY);
+        } catch (error) {
+            console.warn("⚠️ Bot chat failed with Flash, falling back to Pro...");
+            responseText = await callGemini("gemini-2.5-pro", prompt, INTERVIEW_API_KEY);
+        }
+        */
+
+        let responseText = await callGroq(prompt, "You are LAGUA AI, a smart, friendly, and human-like AI assistant designed for language learning and general knowledge.");
+        
+        const cleanResponse = responseText.replace(/Lagua:/gi, '').trim();
+
+        res.json({ 
+            text: cleanResponse,
+            type: 'bot'
+        });
+
+    } catch (error) {
+        console.error('Error in bot chat:', error);
+        res.status(500).json({ error: 'Failed to generate response' });
+    }
+});
+
+// Professional Interview Endpoint
 app.post('/api/interview/chat', async (req, res) => {
     const { history, userResponse, interviewType } = req.body;
     
-    if (!INTERVIEW_API_KEY) {
-        return res.status(500).json({ error: 'Server misconfigured: Missing API Key' });
-    }
 
     try {
         // Map interview type to context
@@ -360,34 +577,31 @@ app.post('/api/interview/chat', async (req, res) => {
         
         // Construct the enhanced prompt
         let prompt = `
-You are an expert, friendly, and highly intelligent AI Job Interviewer conducting a professional interview.
+You are a seasoned Indian Senior Technical Lead or HR Manager with 15+ years of experience at a top-tier MNC or a high-growth startup. You are conducting a professional job interview. Your tone is refined, empathetic, and human-like, yet strictly professional.
 
 INTERVIEW TYPE & CONTEXT:
 ${context}
 
-YOUR DUAL CAPABILITIES:
-1. INTERVIEW MODE: Ask relevant, insightful questions based on the interview type
-2. CLARIFICATION MODE: Answer the candidate's questions, provide explanations, and offer guidance
+YOUR PERSONA & STYLE:
+1. PROFESSIONALISM: You are highly competent and expect quality, but you are also supportive. You represent the best of Indian professional work culture.
+2. HUMAN-LIKE OPENING: DO NOT start with a long, scripted "pleasure to meet you" paragraph. Instead, start like a real person. 
+   - FIRST MESSAGE: A warm greeting and a quick technical check (e.g., "Hi, Good morning! Am I clearly audible to you?"). 
+   - SECOND MESSAGE (after candidate confirms): Brief pleasantry, then move into the interview context.
+   - Avoid "Before we begin..." cliches. Jump into a natural dialogue.
+3. HUMAN-LIKE FLOW: Use conversational fillers and acknowledgments such as "Right," "I see," "That makes sense," or "That's an interesting observation."
+4. NATURAL TRANSITIONS: If the candidate gives a good answer, acknowledge it briefly ("Glad to hear that," "Great point") before moving to the next question.
+5. REGIONAL NUANCE: Use professional Indian English nuances. If appropriate, reference industry standards or project scales common in the Indian ecosystem.
+6. DYNAMIC DRILL-DOWN: Don't just follow a checklist. If a candidate mentions something interesting, ask a follow-up question about it ("You mentioned X, how did that impact the overall project?") before moving to your next main topic.
 
-INTELLIGENT DETECTION - Analyze the candidate's response to determine:
-- Is this an ANSWER to your question? → Acknowledge it and ask the next relevant question
-- Is this a QUESTION from the candidate? (contains ?, "what do you mean", "can you explain", "can you clarify", "I don't understand", etc.) → Provide a clear, helpful answer, then continue the interview naturally
-- Does the candidate need CLARIFICATION? → Explain clearly, rephrase if needed, then continue
-- Is this a REQUEST for examples? → Provide a relevant example, then continue
+DUAL CAPABILITIES:
+1. INTERVIEW MODE: Ask relevant, insightful questions based on the interview type.
+2. CLARIFICATION MODE: Answer the candidate's questions, provide explanations, and offer guidance if they are stuck.
 
-CONVERSATION STYLE:
-1. Keep responses concise (2-4 sentences max) for natural flow
-2. Be encouraging, professional, and supportive
-3. If answering candidate's question: Be clear and helpful, then smoothly transition back to interview
-4. If asking questions: Make them relevant to the interview type and previous answers
-5. Build on previous conversation naturally
-6. No markdown or special formatting - plain text for speech synthesis
-
-IMPORTANT RULES:
-- If candidate asks a question, ALWAYS answer it first before continuing the interview
-- Be flexible and conversational, not rigid
-- Show empathy and understanding
-- Maintain professional interview structure while being approachable
+CONVERSATION RULES:
+1. Keep responses concise (2-4 sentences max) for natural pacing.
+2. No markdown or special formatting - plain text ONLY for speech synthesis.
+3. If candidate asks a question, ALWAYS answer it first before continuing.
+4. Build on the previous conversation naturally to avoid a "robotic" feel.
 
 CONVERSATION HISTORY:
 `;
@@ -413,8 +627,18 @@ DO NOT say "Candidate:" or "Interviewer:" in your output.
 
         prompt += `Interviewer:`;
 
-        console.log("Using Interview API Key for request");
-        const responseText = await callGemini("gemini-2.5-flash", prompt, INTERVIEW_API_KEY);
+        /*
+        // Gemini Implementation (Preserved in comments)
+        let responseText;
+        try {
+            responseText = await callGemini("gemini-2.5-flash", prompt, INTERVIEW_API_KEY);
+        } catch (error) {
+            console.warn("⚠️ Interview chat failed with Flash, falling back to Pro...");
+            responseText = await callGemini("gemini-2.5-pro", prompt, INTERVIEW_API_KEY);
+        }
+        */
+
+        let responseText = await callGroq(prompt, "You are an expert, friendly, and highly intelligent AI Job Interviewer conducting a professional interview.");
         
         // Clean up response
         const cleanResponse = responseText.replace(/Interviewer:/gi, '').trim();
@@ -563,8 +787,8 @@ app.post('/api/practice/submit', async (req, res) => {
         console.log("Submit: Guest user or invalid token");
     }
 
-    if (!API_KEY) {
-        return res.status(500).json({ error: 'Server misconfigured: Missing API Key' });
+    if (!process.env.GROQ_API_KEY) {
+        return res.status(500).json({ error: 'Server misconfigured: Missing Groq API Key' });
     }
 
     try {
@@ -604,13 +828,50 @@ app.post('/api/practice/submit', async (req, res) => {
               "improvements": ["..."],
               "overallFeedback": "..."
             }
-            GUIDELINES: Return ONLY valid JSON, no markdown.
+            FORMATTING RULES:
+            - Use **Markdown** in "overallFeedback" and "pronunciationTips" for better readability.
+            - Use **bolding** for emphasis and *bullet points* for lists within these strings.
+            - Ensure "overallFeedback" is structured with clear paragraphs and sections if long.
+            GUIDELINES: Return ONLY valid JSON, no markdown code block wrapping unless requested.
             `;
     
-            // Use flash for faster feedback
-            const text = await callGemini("gemini-2.5-flash", prompt);
-            const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
-            const analysis = JSON.parse(jsonStr);
+            /*
+            // Gemini Implementation (Preserved in comments)
+            let text;
+            try {
+                text = await callGemini("gemini-2.5-flash", prompt);
+            } catch (error) {
+                console.warn("⚠️ Feedback failed with Flash, falling back to Pro...");
+                text = await callGemini("gemini-2.5-pro", prompt);
+            }
+            */
+
+            let text = await callGroq(prompt, "You are an expert English language coach analyzing a spoken practice session. Always return valid, minified JSON only. Do not use unescaped newlines in strings.");
+            let jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
+            
+            // Robust extraction
+            const startIndex = jsonStr.indexOf('{');
+            const endIndex = jsonStr.lastIndexOf('}');
+            if (startIndex !== -1 && endIndex !== -1) {
+                jsonStr = jsonStr.substring(startIndex, endIndex + 1);
+            }
+
+            let analysis;
+            try {
+                analysis = JSON.parse(jsonStr);
+            } catch (parseError) {
+                console.warn("Initial JSON parse failed, attempting to sanitize control characters...");
+                // Fallback: Remove newlines and tabs to fix "Bad control character"
+                // This makes the JSON minified (valid) and fixes unescaped chars in strings (valid, formats lost)
+                const sanitizedStr = jsonStr.replace(/[\n\r\t]/g, ' ');
+                try {
+                    analysis = JSON.parse(sanitizedStr);
+                } catch (retryError) {
+                    console.error("Failed to parse JSON even after sanitization:", retryError);
+                    console.error("Problematic JSON string:", jsonStr);
+                    throw retryError; // Re-throw to be caught by main handler
+                }
+            }
     
             results = {
                 ...analysis,
@@ -678,113 +939,88 @@ app.post('/api/listening/generate', async (req, res) => {
         return res.status(400).json({ error: "Invalid type. Use 'conversation' or 'story'." });
     }
 
-    if (!API_KEY) {
-        return res.status(500).json({ error: 'Server misconfigured: Missing API Key' });
+    if (!process.env.GROQ_API_KEY) {
+        return res.status(500).json({ error: 'Server misconfigured: Missing Groq API Key' });
     }
 
     try {
-        console.log(`🎧 Generating listening content (Type: ${type})...`);
-        
-        let prompt = "";
-        
-        if (type === 'conversation') {
-            prompt = `Generate a realistic English conversation script for listening practice.
-            Context: ${topic || 'General everyday situation'}
-            Difficulty: ${difficulty} (CEFR B1-B2 level)
-            Length: 40-60 seconds spoken (strictly 80-100 words - KEEP IT SHORT)
-            Format: A dialogue between 2-3 people.
-            
-            Also generate 5-8 multiple-choice or short-answer comprehension questions based on this conversation.
-            
-            Return ONLY a valid JSON object with this structure:
-            {
-                "type": "conversation",
-                "title": "Creative Title Here",
-                "script": [
-                    { "speaker": "Name", "text": "Line of dialogue" },
-                    ...
-                ],
-                "questions": [
-                    {
-                        "id": 1,
-                        "question": "Question text?",
-                        "options": ["Option A", "Option B", "Option C", "Option D"],
-                        "answer": "Correct Option text",
-                        "explanation": "Brief explanation of why this is correct"
-                    }
-                ]
-            }
-            Do not use markdown formatting.`;
-        } else {
-            prompt = `Generate a short English story or article for reading/listening practice.
-            Topic: ${topic || 'Interesting general knowledge or fiction'}
-            Difficulty: ${difficulty} (CEFR B1-B2 level)
-            Length: 40-60 seconds read (strictly 80-100 words - KEEP IT SHORT)
-            
-            Also generate 5-8 comprehension questions.
-            
-            Return ONLY a valid JSON object with this structure:
-            {
-                "type": "story",
-                "title": "Creative Title Here",
-                "content": "Full text of the story/article...",
-                "questions": [
-                    {
-                        "id": 1,
-                        "question": "Question text?",
-                        "options": ["Option A", "Option B", "Option C", "Option D"],
-                        "answer": "Correct Option text",
-                        "explanation": "Brief explanation"
-                    }
-                ]
-            }
-            Do not use markdown formatting.`;
+        // 1. Check Cache (if no specific topic requested)
+        if (!topic && listeningCache[type] && listeningCache[type][difficulty] && listeningCache[type][difficulty].length > 0) {
+            const question = listeningCache[type][difficulty].shift();
+            saveCache();
+            console.log(`✅ Serving ${type} (${difficulty}) from CACHE.`);
+            return res.json(question);
         }
 
-        const generateWithModel = async (modelName) => {
-            console.log(`🤖 Attempting generation with ${modelName}...`);
-            const responseText = await callGemini(modelName, prompt);
-            
-            // Robust JSON Extraction
-            let jsonStr = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-            
-            // Should start with { and end with }
-            const startIndex = jsonStr.indexOf('{');
-            const endIndex = jsonStr.lastIndexOf('}');
-            
-            if (startIndex !== -1 && endIndex !== -1) {
-                jsonStr = jsonStr.substring(startIndex, endIndex + 1);
+        // 2. Generate New Batch (if cache empty or specific topic)
+        // If specific topic, we only generate 1. If generic, we generate batch of 3.
+        const count = topic ? 1 : LISTENING_BATCH_SIZE;
+        console.log(`🎧 Generating listening batch (${count}) for ${type}...`);
+        
+        const newBatch = await generateBatch('listening', count, difficulty, type);
+        
+        if (newBatch.length > 0) {
+            if (!topic) {
+                // Save to cache
+                const first = newBatch.shift();
+                listeningCache[type][difficulty] = [...listeningCache[type][difficulty], ...newBatch];
+                saveCache();
+                console.log(`✅ Cached ${newBatch.length} extra ${type} items.`);
+                return res.json(first);
             } else {
-                 console.warn("⚠️ Could not find outer braces in response, trying raw parse.");
+                // Return immediate result for specific topic
+                return res.json(newBatch[0]);
             }
-
-            try {
-                const parsed = JSON.parse(jsonStr);
-                return parsed;
-            } catch (parseError) {
-                console.error(`❌ JSON Parse Error (${modelName}):`, parseError.message);
-                console.error("RAW EXTRACTED:", jsonStr);
-                throw new Error(`Failed to parse response from ${modelName}`);
-            }
-        };
-
-        let data;
-        try {
-            data = await generateWithModel("gemini-2.5-flash");
-        } catch (flashError) {
-            console.warn(`⚠️ gemini-2.5-flash failed: ${flashError.message}. Retrying with gemini-2.5-pro...`);
-            try {
-                data = await generateWithModel("gemini-2.5-pro");
-            } catch (proError) {
-                console.error(`❌ Both models failed.`);
-                throw new Error(`Generation failed: ${proError.message}`);
-            }
+        } else {
+             throw new Error("Failed to generate valid content.");
         }
-
-        res.json(data);
 
     } catch (error) {
         console.error('🔴 Error generating listening content:', error.message);
+        res.status(500).json({ error: error.message || 'Failed to generate content' });
+    }
+});
+
+app.post('/api/reading/generate', async (req, res) => {
+    const { difficulty = 'intermediate', topic } = req.body;
+    const type = 'reading'; // Fixed type for this endpoint
+
+    if (!process.env.GROQ_API_KEY) {
+        return res.status(500).json({ error: 'Server misconfigured: Missing Groq API Key' });
+    }
+
+    try {
+        // 1. Check Cache
+        if (!topic && readingCache[difficulty] && readingCache[difficulty].length > 0) {
+            const question = readingCache[difficulty].shift();
+            saveCache();
+            console.log(`✅ Serving reading passage (${difficulty}) from CACHE.`);
+            return res.json(question);
+        }
+
+        // 2. Generate New Batch
+        const count = topic ? 1 : READING_BATCH_SIZE;
+        console.log(`📖 Generating reading batch (${count})...`);
+        
+        const newBatch = await generateBatch('reading', count, difficulty);
+        
+        if (newBatch.length > 0) {
+            if (!topic) {
+                // Save to cache
+                const first = newBatch.shift();
+                readingCache[difficulty] = [...readingCache[difficulty], ...newBatch];
+                saveCache();
+                console.log(`✅ Cached ${newBatch.length} extra reading items.`);
+                return res.json(first);
+            } else {
+                return res.json(newBatch[0]);
+            }
+        } else {
+             throw new Error("Failed to generate valid reading content.");
+        }
+
+    } catch (error) {
+        console.error('🔴 Error generating reading content:', error.message);
         res.status(500).json({ error: error.message || 'Failed to generate content' });
     }
 });

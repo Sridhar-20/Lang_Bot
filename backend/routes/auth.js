@@ -31,8 +31,16 @@ router.post('/google', async (req, res) => {
             }
         } else {
             // Create new user (Generate random password placeholder)
+            // Ensure username is unique
+            let newUsername = name;
+            let counter = 1;
+            while (await User.findOne({ username: newUsername })) {
+                newUsername = `${name}${counter}`;
+                counter++;
+            }
+
             user = await User.create({
-                username: name,
+                username: newUsername,
                 email,
                 password: Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8), 
                 googleId
@@ -48,7 +56,10 @@ router.post('/google', async (req, res) => {
 
     } catch (error) {
         console.error("Google Auth Error:", error);
-        res.status(401).json({ error: 'Google authentication failed' });
+        const fs = require('fs');
+        const path = require('path');
+        fs.appendFileSync(path.join(__dirname, '../google_auth_error.log'), `[${new Date().toISOString()}] ${error.stack || error}\n`);
+        res.status(401).json({ error: `Google authentication failed: ${error.message}` });
     }
 });
 

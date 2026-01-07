@@ -19,7 +19,7 @@ const ListeningPractice = () => {
   // Refs for audio handling
   const utteranceRef = useRef(null);
 
-  // Load voices
+  // Load voices and Handle Mode Change
   useEffect(() => {
     const loadVoices = () => {
         const available = window.speechSynthesis.getVoices();
@@ -28,9 +28,9 @@ const ListeningPractice = () => {
     loadVoices();
     window.speechSynthesis.onvoiceschanged = loadVoices;
     
-    // Initial Generation
+    // Generate content whenever mode changes
     generateContent();
-  }, []);
+  }, [mode]);
 
   const generateContent = async () => {
     setLoading(true);
@@ -41,12 +41,22 @@ const ListeningPractice = () => {
     stopAudio();
 
     try {
-        const response = await fetch('http://localhost:5000/api/listening/generate', {
+        let url, body;
+        
+        if (mode === 'reading') {
+            url = 'http://localhost:5000/api/reading/generate';
+            body = { difficulty: 'intermediate' }; // Can be dynamic later
+        } else {
+            url = 'http://localhost:5000/api/listening/generate';
+            body = { type: 'conversation', difficulty: 'intermediate' };
+        }
+
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: 'conversation', difficulty: 'intermediate' }) 
-            // Defaulting to conversation for now, can add toggle later
+            body: JSON.stringify(body)
         });
+
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.error || `Server Error: ${response.status}`);
@@ -55,7 +65,7 @@ const ListeningPractice = () => {
         const data = await response.json();
         setContent(data);
     } catch (err) {
-        console.error("Listening Generation Error:", err);
+        console.error("Content Generation Error:", err);
         toast.error(err.message || "Failed to generate content. Please try again.");
     } finally {
         setLoading(false);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 import { FiArrowLeft, FiAward } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -304,7 +305,9 @@ const TopicPractice = () => {
             {sessionResults.topicFeedback && sessionResults.topicFeedback !== 'null' && (
               <div style={{ background: 'rgba(16, 185, 129, 0.05)', padding: '24px', borderRadius: '16px', marginBottom: '30px', borderLeft: '4px solid var(--success)' }}>
                 <h3 style={{ color: 'var(--success)', marginBottom: '10px' }}>📝 Topic Analysis</h3>
-                <p style={{ lineHeight: '1.6', color: 'var(--text-secondary)' }}>{sessionResults.topicFeedback}</p>
+                <div style={{ lineHeight: '1.6', color: 'var(--text-secondary)' }}>
+                  <ReactMarkdown>{sessionResults.topicFeedback}</ReactMarkdown>
+                </div>
               </div>
             )}
 
@@ -334,7 +337,7 @@ const TopicPractice = () => {
                   {sessionResults.pronunciationTips?.map((tip, i) => (
                     <li key={i} style={{ marginBottom: '10px', paddingLeft: '20px', position: 'relative' }}>
                       <span style={{ position: 'absolute', left: 0, color: 'var(--accent-primary)' }}>•</span>
-                      {tip}
+                      <ReactMarkdown>{tip}</ReactMarkdown>
                     </li>
                   ))}
                 </ul>
@@ -355,7 +358,9 @@ const TopicPractice = () => {
             {/* Overall Feedback */}
             <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '24px', borderRadius: '16px', marginBottom: '30px' }}>
               <h3>Coach's Feedback</h3>
-              <p style={{ marginTop: '10px', lineHeight: '1.6', color: 'var(--text-secondary)' }}>{sessionResults.overallFeedback}</p>
+              <div style={{ marginTop: '10px', lineHeight: '1.6', color: 'var(--text-secondary)' }}>
+                <ReactMarkdown>{sessionResults.overallFeedback}</ReactMarkdown>
+              </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
