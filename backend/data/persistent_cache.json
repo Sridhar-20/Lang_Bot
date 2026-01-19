@@ -1,16 +1,80 @@
 {
   "topicCache": [
     {
+      "id": 2,
+      "text": "How does social media influence our perceptions of reality and relationships?"
+    },
+    {
+      "id": 3,
+      "text": "What role should governments play in regulating technology companies and protecting user data?"
+    },
+    {
+      "id": 4,
+      "text": "How can individuals balance personal freedom with the need for national security in the digital age?"
+    },
+    {
+      "id": 5,
+      "text": "What are the most significant challenges facing our society today, and how can we address them?"
+    },
+    {
+      "id": 6,
+      "text": "Should education prioritize practical skills or theoretical knowledge?"
+    },
+    {
+      "id": 7,
+      "text": "In what ways can travel and cultural exchange shape our perspectives and understanding of the world?"
+    },
+    {
+      "id": 8,
+      "text": "What are the key factors that contribute to personal growth and self-improvement?"
+    },
+    {
+      "id": 9,
+      "text": "How can we promote environmental sustainability and reduce our carbon footprint?"
+    },
+    {
+      "id": 10,
+      "text": "What are the implications of virtual reality on our social interactions and mental health?"
+    },
+    {
+      "id": 11,
+      "text": "Should cities prioritize economic growth or environmental conservation?"
+    },
+    {
+      "id": 12,
+      "text": "How can we foster a sense of community and social connection in urban environments?"
+    },
+    {
+      "id": 13,
+      "text": "What are the benefits and drawbacks of a minimalist lifestyle?"
+    },
+    {
+      "id": 14,
+      "text": "How can we balance our desire for technological advancements with the need to protect traditional skills and crafts?"
+    },
+    {
+      "id": 15,
+      "text": "What role should education play in shaping our moral values and principles?"
+    },
+    {
+      "id": 16,
+      "text": "How can we promote cultural understanding and appreciation in a globalized world?"
+    },
+    {
+      "id": 17,
+      "text": "What are the most significant advantages and disadvantages of remote work?"
+    },
+    {
       "id": 18,
-      "text": "If you could switch lives with someone for a day, who would it be and what do you think you would learn?"
+      "text": "Should we prioritize preserving historical landmarks or developing new infrastructure?"
     },
     {
       "id": 19,
-      "text": "What strategies can individuals use to maintain a healthy work-life balance in a fast-paced world?"
+      "text": "How can we promote volunteerism and social responsibility among young people?"
     },
     {
       "id": 20,
-      "text": "How can we ensure that technological advancements benefit all segments of society, not just a privileged few?"
+      "text": "What are the potential consequences of a post-scarcity economy on our societal structures and values?"
     }
   ],
   "grammarCache": {
@@ -165,34 +229,6 @@
       }
     ],
     "intermediate": [
-      {
-        "id": 33,
-        "text": "Since I moved to this vibrant city, I have made many wonderful new friends, and I feel very happy and settled here."
-      },
-      {
-        "id": 34,
-        "text": "You must submit your detailed assignment by Friday afternoon, or you will certainly receive a penalty for lateness."
-      },
-      {
-        "id": 35,
-        "text": "They are meeting their new potential clients next Tuesday morning to discuss future collaboration opportunities."
-      },
-      {
-        "id": 36,
-        "text": "The popular coffee shop was completely full and bustling, so we decided to go to another, less crowded one."
-      },
-      {
-        "id": 37,
-        "text": "When you heat water to exactly 100 degrees Celsius, it consistently boils and turns into steam."
-      },
-      {
-        "id": 38,
-        "text": "Despite the heavy torrential rain, the children played happily and energetically in the garden yesterday afternoon."
-      },
-      {
-        "id": 39,
-        "text": "By the end of this current year, I will have been diligently studying English for ten consecutive years."
-      },
       {
         "id": 40,
         "text": "He might have completely forgotten about our important appointment, because he didn't show up at all."
@@ -488,7 +524,128 @@
   "listeningCache": {
     "conversation": {
       "basic": [],
-      "intermediate": [],
+      "intermediate": [
+        {
+          "type": "conversation",
+          "title": " Discussing the Weather",
+          "script": [
+            {
+              "speaker": "David",
+              "text": "I love this time of year, the weather is so warm and sunny. It's been around 75°F all week."
+            },
+            {
+              "speaker": "Olivia",
+              "text": "I know, it's perfect weather for a picnic. I was thinking of going to the park on Saturday at 2 PM."
+            },
+            {
+              "speaker": "David",
+              "text": "That sounds like a great idea, I'd love to join you. What should we bring?"
+            },
+            {
+              "speaker": "Olivia",
+              "text": "We can bring some sandwiches, fruit, and drinks. I was thinking of making some chicken sandwiches, they're my favorite."
+            }
+          ],
+          "questions": [
+            {
+              "id": 1,
+              "question": "What is the temperature outside?",
+              "options": [
+                "65°F",
+                "70°F",
+                "75°F",
+                "80°F"
+              ],
+              "answer": "75°F",
+              "explanation": "David mentions the temperature"
+            },
+            {
+              "id": 2,
+              "question": "What is Olivia planning to do on Saturday?",
+              "options": [
+                "Go to the beach",
+                "Go to the park",
+                "Go to the movies",
+                "Go shopping"
+              ],
+              "answer": "Go to the park",
+              "explanation": "Olivia mentions she's going to the park"
+            },
+            {
+              "id": 3,
+              "question": "What time is Olivia planning to go to the park?",
+              "options": [
+                "10 AM",
+                "12 PM",
+                "2 PM",
+                "4 PM"
+              ],
+              "answer": "2 PM",
+              "explanation": "Olivia mentions the time"
+            },
+            {
+              "id": 4,
+              "question": "What does Olivia want to bring to the park?",
+              "options": [
+                "Sandwiches, fruit, and drinks",
+                "Pizza, salad, and ice cream",
+                "Tacos, chips, and soda",
+                "Hot dogs, burgers, and water"
+              ],
+              "answer": "Sandwiches, fruit, and drinks",
+              "explanation": "Olivia mentions what she wants to bring"
+            },
+            {
+              "id": 5,
+              "question": "What kind of sandwiches is Olivia planning to make?",
+              "options": [
+                "Turkey sandwiches",
+                "Ham sandwiches",
+                "Chicken sandwiches",
+                "Veggie sandwiches"
+              ],
+              "answer": "Chicken sandwiches",
+              "explanation": "Olivia mentions she's making chicken sandwiches"
+            },
+            {
+              "id": 6,
+              "question": "Who is joining Olivia at the park?",
+              "options": [
+                "David",
+                "Michael",
+                "Sarah",
+                "Emily"
+              ],
+              "answer": "David",
+              "explanation": "David mentions he'd love to join Olivia"
+            },
+            {
+              "id": 7,
+              "question": "Why does Olivia like chicken sandwiches?",
+              "options": [
+                "Because they're healthy",
+                "Because they're her favorite",
+                "Because they're easy to make",
+                "Because they're expensive"
+              ],
+              "answer": "Because they're her favorite",
+              "explanation": "Olivia mentions chicken sandwiches are her favorite"
+            },
+            {
+              "id": 8,
+              "question": "What season is it?",
+              "options": [
+                "Winter",
+                "Spring",
+                "Summer",
+                "Fall"
+              ],
+              "answer": "Summer",
+              "explanation": "David mentions it's warm and sunny"
+            }
+          ]
+        }
+      ],
       "advanced": []
     },
     "story": {
@@ -499,87 +656,7 @@
   },
   "readingCache": {
     "basic": [],
-    "intermediate": [
-      {
-        "type": "reading",
-        "title": "The Science of Climate Change",
-        "content": "Climate change is one of the most pressing issues of our time, with far-reaching consequences for the health of our planet and its inhabitants. The scientific consensus is clear: human activities, particularly the burning of fossil fuels and deforestation, are releasing large amounts of greenhouse gases, such as carbon dioxide and methane, into the atmosphere, leading to a global average temperature increase of over 1°C since the late 19th century. This warming is causing melting of polar ice caps, sea-level rise, and altered weather patterns, such as more frequent and intense heatwaves, droughts, and storms. The impacts of climate change are already being felt, from more frequent natural disasters to changes in the distribution of plants and animals. The science of climate change is complex, involving many different fields of study, including physics, chemistry, biology, and economics. Climate models, which use complex computer simulations to predict future climate change, have become increasingly sophisticated, allowing scientists to better understand the likely consequences of different scenarios. However, there is still much uncertainty about the exact magnitude and timing of climate change, and more research is needed to improve our understanding. One of the key challenges in addressing climate change is the need for immediate and drastic reduction in greenhouse gas emissions, which will require significant changes to our energy systems, transportation, and land use practices. This will require a coordinated effort from governments, businesses, and individuals around the world. In recent years, there have been many positive developments, including the growth of renewable energy sources, increased energy efficiency, and the adoption of climate-friendly policies. However, much more needs to be done to avoid the worst impacts of climate change. The window for action is rapidly closing, and it is essential that we take bold and immediate action to reduce our greenhouse gas emissions and transition to a more sustainable future. The science of climate change is clear, and it is up to us to take action to protect the planet and ensure a livable future for generations to come. The consequences of inaction will be severe, and it is our responsibility to act now to mitigate the effects of climate change. By working together, we can create a more sustainable future and avoid the worst impacts of climate change.",
-        "questions": [
-          {
-            "id": 1,
-            "question": "What is the main cause of climate change?",
-            "options": [
-              "Natural factors, such as volcanic eruptions",
-              "Human activities, such as burning fossil fuels and deforestation",
-              "A combination of natural and human factors",
-              "Unknown factors"
-            ],
-            "answer": "B",
-            "explanation": "The scientific consensus is clear: human activities, particularly the burning of fossil fuels and deforestation, are releasing large amounts of greenhouse gases into the atmosphere"
-          },
-          {
-            "id": 2,
-            "question": "What is the expected outcome of climate change?",
-            "options": [
-              "A global average temperature decrease",
-              "A global average temperature increase",
-              "No change in global temperature",
-              "A stabilization of global temperature"
-            ],
-            "answer": "B",
-            "explanation": "This warming is causing melting of polar ice caps, sea-level rise, and altered weather patterns"
-          },
-          {
-            "id": 3,
-            "question": "What is one of the key challenges in addressing climate change?",
-            "options": [
-              "The need for more research",
-              "The need for immediate and drastic reduction in greenhouse gas emissions",
-              "The need for increased funding",
-              "The need for more public awareness"
-            ],
-            "answer": "B",
-            "explanation": "One of the key challenges in addressing climate change is the need for immediate and drastic reduction in greenhouse gas emissions"
-          },
-          {
-            "id": 4,
-            "question": "What is the role of climate models in understanding climate change?",
-            "options": [
-              "To predict future climate change",
-              "To study the impacts of climate change",
-              "To develop new technologies to mitigate climate change",
-              "To raise public awareness about climate change"
-            ],
-            "answer": "A",
-            "explanation": "Climate models, which use complex computer simulations to predict future climate change, have become increasingly sophisticated"
-          },
-          {
-            "id": 5,
-            "question": "What is the consequence of inaction on climate change?",
-            "options": [
-              "Severe impacts on the environment and human health",
-              "No significant impacts on the environment and human health",
-              "Some impacts on the environment, but not human health",
-              "Some impacts on human health, but not the environment"
-            ],
-            "answer": "A",
-            "explanation": "The consequences of inaction will be severe, and it is our responsibility to act now to mitigate the effects of climate change"
-          },
-          {
-            "id": 6,
-            "question": "What is necessary to address climate change?",
-            "options": [
-              "A coordinated effort from governments, businesses, and individuals",
-              "Increased funding for climate change research",
-              "More public awareness about climate change",
-              "The development of new technologies to mitigate climate change"
-            ],
-            "answer": "A",
-            "explanation": "This will require a coordinated effort from governments, businesses, and individuals around the world"
-          }
-        ]
-      }
-    ],
+    "intermediate": [],
     "advanced": []
   }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FiMic, FiAward, FiCalendar, FiClock, FiTrendingUp } from 'react-icons/fi';
+import { FiMic, FiAward, FiCalendar, FiClock, FiTrendingUp, FiBookOpen, FiHeadphones } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import '../styles/Dashboard.css';
 
@@ -122,11 +122,6 @@ const Dashboard = () => {
                 <h3>Grammar Practice</h3>
                 <p>Master sentence structures</p>
               </Link>
-              <Link to="/interview-practice" className="practice-mode-card">
-                <div className="mode-icon"><FiBriefcase /></div>
-                <h3>Interview Prep</h3>
-                <p>Ace your next interview</p>
-              </Link>
             </div>
           </section>
 
@@ -145,6 +140,8 @@ const Dashboard = () => {
                       {session.type.includes('Topic') && <FiMic />}
                       {session.type.includes('Grammar') && <FiAward />}
                       {session.type.includes('Interview') && <FiBriefcase />}
+                      {(session.type.includes('Listening') || session.type.includes('Listen')) && <FiHeadphones />}
+                      {session.type.includes('Reading') && <FiBookOpen />}
                     </div>
                     <div className="activity-details">
                       <h4>{session.topic}</h4>

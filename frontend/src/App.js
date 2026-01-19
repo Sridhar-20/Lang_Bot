@@ -12,9 +12,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import TopicPractice from './pages/TopicPractice';
 import GrammarPractice from './pages/GrammarPractice';
-import InterviewPractice from './pages/InterviewPractice';
 import AIInterviewer from './pages/AIInterviewer';
-import ListeningPractice from './pages/ListeningPractice';
+import ListenReadPractice from './pages/ListenReadPractice';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -50,19 +49,14 @@ function App() {
                   <GrammarPractice />
                 </ProtectedRoute>
               } />
-              <Route path="/interview-practice" element={
-                <ProtectedRoute>
-                  <InterviewPractice />
-                </ProtectedRoute>
-              } />
               <Route path="/ai-interviewer" element={
                 <ProtectedRoute>
                   <AIInterviewer />
                 </ProtectedRoute>
               } />
-              <Route path="/listening-practice" element={
+              <Route path="/listen-and-read" element={
                 <ProtectedRoute>
-                  <ListeningPractice />
+                  <ListenReadPractice />
                 </ProtectedRoute>
               } />
               <Route path="/dashboard" element={

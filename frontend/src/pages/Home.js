@@ -136,12 +136,6 @@ const Home = () => {
                 icon: <FiAward />
               },
               {
-                title: "Interview Prep",
-                description: "Simulate real job interviews and get confidence scores on your answers.",
-                link: "/interview-practice",
-                icon: <FiBriefcase />
-              },
-              {
                 title: "AI Bot",
                 description: "Ask daily questions, get quotes, or explore general knowledge with your AI assistant.",
                 link: { pathname: "/ai-interviewer", state: { mode: "bot" } },
@@ -154,9 +148,9 @@ const Home = () => {
                 icon: <FiMic />
               },
               {
-                title: "Listening Practice",
-                description: "Improve your comprehension with varied audio exercises and accents.",
-                link: "/listening-practice",
+                title: "Listen & Read",
+                description: "Improve your comprehension with varied audio exercises and reading materials.",
+                link: "/listen-and-read",
                 icon: <FiHeadphones />
               }
             ]} />

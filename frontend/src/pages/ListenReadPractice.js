@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiHeadphones, FiBookOpen, FiPlay, FiPause, FiRefreshCw, FiCheck, FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import AuroraBackground from '../components/AuroraBackground';
-import '../styles/ListeningPractice.css';
+import '../styles/ListenReadPractice.css';
 
-const ListeningPractice = () => {
+const ListenReadPractice = () => {
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState(null);
   const [mode, setMode] = useState('listening'); // 'listening' | 'reading'
@@ -143,7 +143,7 @@ const ListeningPractice = () => {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
             body: JSON.stringify({
-                type: mode, // 'listening' or 'reading'
+                type: mode === 'listening' ? 'Listen & Read (Listening)' : 'Listen & Read (Reading)',
                 topic: content.title,
                 score: correct,
                 totalQuestions: content.questions.length,
@@ -155,7 +155,7 @@ const ListeningPractice = () => {
         const history = JSON.parse(localStorage.getItem('practiceHistory') || '[]');
         history.unshift({
             id: Date.now(),
-            type: mode === 'listening' ? 'Listening Practice' : 'Reading Practice',
+            type: mode === 'listening' ? 'Listen & Read (Listening)' : 'Listen & Read (Reading)',
             topic: content.title,
             score: Math.round((correct / content.questions.length) * 100),
             date: new Date().toISOString()
@@ -179,7 +179,7 @@ const ListeningPractice = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
         >
-            <h1 className="gradient-text">Listening Master</h1>
+            <h1 className="gradient-text">Listen & Read</h1>
             <p>Listen, comprehend, and master native conversations.</p>
 
             <div className="mode-switch">
@@ -336,4 +336,4 @@ const ListeningPractice = () => {
   );
 };
 
-export default ListeningPractice;
+export default ListenReadPractice;

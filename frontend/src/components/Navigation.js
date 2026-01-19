@@ -23,8 +23,7 @@ const navLinks = [
       children: [
         { name: 'Topic Practice', path: '/topic-practice' },
         { name: 'Grammar Practice', path: '/grammar-practice' },
-        { name: 'Interview Practice', path: '/interview-practice' },
-        { name: 'Listening Practice', path: '/listening-practice' },
+        { name: 'Listen & Read', path: '/listen-and-read' },
       ]
     },
     { name: 'AI Interviewer', path: '/ai-interviewer' },
