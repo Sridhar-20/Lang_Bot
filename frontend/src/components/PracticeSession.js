@@ -393,7 +393,13 @@ const PracticeSession = ({ practiceType, question, onNewQuestion, onSessionCompl
             >
               {useHighAccuracy ? <FiCpu color="var(--accent-primary)" /> : <FiZap color="var(--warning)" />}
               <span style={{ fontSize: '0.9rem', color: useHighAccuracy ? 'var(--accent-primary)' : 'var(--text-secondary)' }}>
-                {useHighAccuracy ? 'High Accuracy (Whisper)' : 'Fast Mode (Browser)'}
+                {useHighAccuracy ? 'High Accuracy' : 'Fast Mode'}
+              </span>
+              
+              {/* Language Indicator */}
+              <div style={{ width: '1px', height: '14px', background: 'var(--border-color)', margin: '0 5px' }} />
+              <span style={{ fontSize: '0.9rem', opacity: 0.8 }} title={`Listening in ${browserSTT.currentLanguage}`}>
+                 {browserSTT.currentLanguage === 'en-IN' ? '🇮🇳' : browserSTT.currentLanguage === 'en-GB' ? '🇬🇧' : '🇺🇸'}
               </span>
             </div>
           )}

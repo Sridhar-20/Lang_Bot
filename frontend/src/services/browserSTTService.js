@@ -10,6 +10,7 @@ class BrowserSTTService {
             onEnd: () => {},
         };
         this.finalTranscript = '';
+        this.currentLanguage = localStorage.getItem('stt_language') || 'en-US';
         this.initialize();
     }
 
@@ -25,7 +26,7 @@ class BrowserSTTService {
 
         this.recognition.continuous = true;
         this.recognition.interimResults = true;
-        this.recognition.lang = 'en-US';
+        this.recognition.lang = this.currentLanguage;
 
         this.recognition.onstart = () => {
             this.isRecording = true;
@@ -71,6 +72,14 @@ class BrowserSTTService {
 
     setCallbacks(callbacks) {
         this.callbacks = { ...this.callbacks, ...callbacks };
+    }
+
+    setLanguage(lang) {
+        this.currentLanguage = lang;
+        localStorage.setItem('stt_language', lang);
+        if (this.recognition) {
+            this.recognition.lang = lang;
+        }
     }
 
     startRecording() {
@@ -119,6 +128,10 @@ class BrowserSTTService {
     resetTranscript() {
         this.finalTranscript = '';
         this.callbacks.onTranscript('', '');
+    }
+
+    getFinalTranscript() {
+        return this.finalTranscript.trim();
     }
 }
 

@@ -152,6 +152,12 @@ const Home = () => {
                 description: "Improve your comprehension with varied audio exercises and reading materials.",
                 link: "/listen-and-read",
                 icon: <FiHeadphones />
+              },
+              {
+                title: "Dashboard",
+                description: "View your learning stats, track progress, and analyze your performance.",
+                link: "/dashboard",
+                icon: <FiTrendingUp />
               }
             ]} />
           </motion.div>

@@ -39,10 +39,15 @@ self.addEventListener('message', async (event) => {
             
             console.log("Worker: Audio received. Type:", audio.constructor.name);
             console.log("Worker: Audio length:", audio.length);
-            console.log("Worker: First 5 samples:", audio.slice(0, 5));
+            // console.log("Worker: First 5 samples:", audio.slice(0, 5));
 
-            // Minimal config - rely on defaults
-            const output = await transcriber(audio);
+            // Generate options
+            const options = {
+                language: 'english', // Explicitly set English to reduce hallucination
+                task: 'transcribe'
+            };
+
+            const output = await transcriber(audio, options);
 
             console.log("Worker: Transcription output:", output);
             self.postMessage({ type: 'result', data: output });

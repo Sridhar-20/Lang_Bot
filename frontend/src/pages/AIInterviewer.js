@@ -160,6 +160,12 @@ const AIInterviewer = () => {
       
       setVoices(available);
       setSelectedVoice(preferred || available[0]);
+
+      // Update STT Language
+      const sttLang = preferred?.lang || 'en-US';
+      console.log(`Setting STT Language to: ${sttLang}`); // Debug log
+      browserSTT.setLanguage(sttLang);
+
     };
     
     loadVoices();
@@ -426,6 +432,9 @@ const AIInterviewer = () => {
             
             const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
             
+            // Wait a bit for browser STT to finalize any pending results
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
             // 1. Try Whisper first (High Accuracy)
             let finalUserText = "";
             try {
@@ -444,9 +453,12 @@ const AIInterviewer = () => {
             }
 
             // 2. Logic to pick the best transcript
+            // Get browser transcript from the service directly (more reliable than React state)
+            const browserFinalTranscript = browserSTT.getFinalTranscript();
             let transcriptSource = "Whisper";
             const whisperText = (finalUserText || "").trim();
-            const browserText = (transcript || "").trim();
+            // Use service's finalTranscript first, fallback to state if needed
+            const browserText = (browserFinalTranscript || transcript || "").trim();
             
             // Heuristic: If browser transcript is significantly longer (e.g., 40% more words),
             // it likely captured speech that Whisper missed due to connection or sample issues.

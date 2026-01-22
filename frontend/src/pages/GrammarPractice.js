@@ -106,6 +106,16 @@ const GrammarPractice = () => {
         if (!bestVoice) bestVoice = voices.find(v => v.lang.includes('en')); // Fallback to English
         
         setSelectedVoice(bestVoice);
+        
+        // Update Browser STT Language
+        // Browser STT usually expects 'en-US', 'en-GB', 'en-IN'
+        // Our config.accent is 'US', 'UK', 'IN'
+        const sttLangMap = { 'US': 'en-US', 'UK': 'en-GB', 'IN': 'en-IN' };
+        const targetLang = sttLangMap[config.accent] || 'en-US';
+        // console.log("Setting Grammar STT to:", targetLang);
+        import('../services/browserSTTService').then(module => {
+           module.default.setLanguage(targetLang);
+        });
       };
       loadVoice();
       window.speechSynthesis.onvoiceschanged = loadVoice;
