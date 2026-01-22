@@ -8,7 +8,7 @@ env.useBrowserCache = true;
 
 class AutomaticSpeechRecognitionPipeline {
     static task = 'automatic-speech-recognition';
-    static model = 'Xenova/whisper-tiny.en'; // Reverting to Tiny for stability
+    static model = 'Xenova/whisper-base.en'; // Upgraded to Base for better accuracy
     static instance = null;
 
     static async getInstance(progress_callback = null) {
@@ -43,8 +43,9 @@ self.addEventListener('message', async (event) => {
 
             // Generate options
             const options = {
-                language: 'english', // Explicitly set English to reduce hallucination
-                task: 'transcribe'
+                language: 'en', // Use ISO code 'en' for English
+                task: 'transcribe',
+                chunk_length_s: 30
             };
 
             const output = await transcriber(audio, options);

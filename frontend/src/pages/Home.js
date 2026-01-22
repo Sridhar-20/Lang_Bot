@@ -40,7 +40,7 @@ const ModelManager = () => {
       className="neon-button"
       style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px' }}
     >
-      <FiDownload /> Install Model (75MB)
+      <FiDownload /> Install Model (140MB)
     </button>
   );
 };

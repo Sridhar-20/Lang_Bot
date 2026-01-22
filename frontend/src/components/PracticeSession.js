@@ -273,7 +273,7 @@ const PracticeSession = ({ practiceType, question, onNewQuestion, onSessionCompl
           // Resample if necessary (though AudioContext constructor should handle it, explicit check is safer)
           if (audioBuffer.sampleRate !== 16000) {
             console.log(`Resampling from ${audioBuffer.sampleRate} to 16000Hz`);
-            const offlineCtx = new OfflineAudioContext(1, audioBuffer.duration * 16000, 16000);
+            const offlineCtx = new OfflineAudioContext(1, Math.ceil(audioBuffer.duration * 16000), 16000);
             const source = offlineCtx.createBufferSource();
             source.buffer = audioBuffer;
             source.connect(offlineCtx.destination);
@@ -295,10 +295,14 @@ const PracticeSession = ({ practiceType, question, onNewQuestion, onSessionCompl
                 detectIssues(finalText);
                 toast.success('Enhanced with High Accuracy!');
             } else {
-                console.warn("Whisper returned empty text. Keeping browser transcript.");
-                // DEBUG: Show what Whisper actually returned
-                toast(`Debug: Whisper said "${JSON.stringify(result)}"`, { icon: '🐛' });
-                toast('Kept browser transcript (Whisper uncertain)', { icon: 'ℹ️' });
+                console.warn("Whisper returned empty text.");
+                // More user-friendly error
+                if (result && typeof result === 'object') {
+                    toast.error(`Whisper output empty. (Raw: ${JSON.stringify(result).substring(0, 50)}...)`);
+                } else {
+                    toast.error('Whisper produced no text.');
+                }
+                toast('Keeping browser transcript (Whisper uncertain)', { icon: 'ℹ️' });
             }
           } catch (err) {
             console.error("Whisper Error:", err);

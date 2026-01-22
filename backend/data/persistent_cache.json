@@ -1,32 +1,72 @@
 {
   "topicCache": [
     {
+      "id": 4,
+      "text": "If you could travel anywhere in the world, where would you go and what would you hope to experience or achieve?"
+    },
+    {
+      "id": 5,
+      "text": "What are some common societal pressures that people face, and how can we work to mitigate their negative effects?"
+    },
+    {
+      "id": 6,
+      "text": "How do you think technology will continue to evolve in the next decade, and what implications might this have for humanity?"
+    },
+    {
+      "id": 7,
+      "text": "What does it mean to be a responsible global citizen, and what actions can we take to make a positive impact?"
+    },
+    {
+      "id": 8,
+      "text": "In what ways can learning a new language enrich our lives, and what challenges might we face in the process?"
+    },
+    {
+      "id": 9,
+      "text": "What are some key factors that contribute to a person's overall happiness, and how can we incorporate them into our daily lives?"
+    },
+    {
+      "id": 10,
+      "text": "How can we balance the need for economic growth with the importance of protecting the environment?"
+    },
+    {
+      "id": 11,
+      "text": "What are some of the most significant cultural differences you've encountered, and how have they influenced your perspective?"
+    },
+    {
+      "id": 12,
+      "text": "If you could go back in time and give advice to your younger self, what would it be and why?"
+    },
+    {
+      "id": 13,
+      "text": "In what ways can mindfulness and self-reflection contribute to personal growth, and how can we make them a part of our daily routine?"
+    },
+    {
       "id": 14,
-      "text": "How can we balance our desire for technological advancements with the need to protect traditional skills and crafts?"
+      "text": "What are some common myths or misconceptions about different cultures, and how can we work to dispel them?"
     },
     {
       "id": 15,
-      "text": "What role should education play in shaping our moral values and principles?"
+      "text": "How can we use our unique skills and talents to make a positive impact in our communities?"
     },
     {
       "id": 16,
-      "text": "How can we promote cultural understanding and appreciation in a globalized world?"
+      "text": "What role does creativity play in our lives, and how can we nurture it to achieve our goals?"
     },
     {
       "id": 17,
-      "text": "What are the most significant advantages and disadvantages of remote work?"
+      "text": "What are some of the most pressing global issues of our time, and how can we contribute to finding solutions?"
     },
     {
       "id": 18,
-      "text": "Should we prioritize preserving historical landmarks or developing new infrastructure?"
+      "text": "If you could switch lives with someone for a day, who would it be and what do you think you would learn from the experience?"
     },
     {
       "id": 19,
-      "text": "How can we promote volunteerism and social responsibility among young people?"
+      "text": "How can we effectively communicate across cultural and linguistic boundaries, and what are some common pitfalls to avoid?"
     },
     {
       "id": 20,
-      "text": "What are the potential consequences of a post-scarcity economy on our societal structures and values?"
+      "text": "What are some ways in which we can cultivate empathy and understanding in our interactions with others?"
     }
   ],
   "grammarCache": {
@@ -328,30 +368,6 @@
     ],
     "advanced": [
       {
-        "id": 10,
-        "text": "The new policy, the implications of which have yet to be fully comprehended, has been met with a mixture of cautious optimism and profound skepticism."
-      },
-      {
-        "id": 11,
-        "text": "The committee insisted that the investigation be conducted by an independent third party and that its findings be made public immediately."
-      },
-      {
-        "id": 12,
-        "text": "To address only the superficial symptoms of this societal issue without tackling its root causes is to do little more than put a Band-Aid on a gaping wound."
-      },
-      {
-        "id": 13,
-        "text": "The legislation, seeking to ameliorate the housing crisis, inadvertently created a plethora of bureaucratic hurdles for first-time buyers."
-      },
-      {
-        "id": 14,
-        "text": "If he were a more prescient leader, he would have recognized the shifting geopolitical landscape and pivoted the country's foreign policy accordingly."
-      },
-      {
-        "id": 15,
-        "text": "In light of the recent intellectual property theft, the CEO had the company's entire digital infrastructure audited by a team of external experts."
-      },
-      {
         "id": 16,
         "text": "Under no circumstances should the preliminary, unverified data be disseminated to the press or any other external body."
       },
@@ -456,260 +472,7 @@
   "listeningCache": {
     "conversation": {
       "basic": [],
-      "intermediate": [
-        {
-          "type": "conversation",
-          "title": "Job Interview",
-          "script": [
-            {
-              "speaker": "Interviewer",
-              "text": "Hello, thank you for coming in today. Can you tell me a little bit about yourself?"
-            },
-            {
-              "speaker": "Candidate",
-              "text": "My name is Sarah, and I have 3 years of experience in marketing. I'm excited about the opportunity to work at Johnson & Co."
-            },
-            {
-              "speaker": "Interviewer",
-              "text": "Great, we're looking for someone with strong communication skills. Can you give me an example of a successful campaign you've led?"
-            },
-            {
-              "speaker": "Candidate",
-              "text": "In my previous role at ABC Corporation, I led a campaign that increased sales by 25% within 6 months. We spent a budget of 10,000 dollars and reached over 1 million people."
-            },
-            {
-              "speaker": "Interviewer",
-              "text": "That's impressive. We're looking for someone to start as soon as possible, ideally within the next 2 weeks."
-            }
-          ],
-          "questions": [
-            {
-              "id": 1,
-              "question": "What is the candidate's name?",
-              "options": [
-                "Emily",
-                "Sarah",
-                "David",
-                "John"
-              ],
-              "answer": "Sarah",
-              "explanation": "The candidate introduces herself"
-            },
-            {
-              "id": 2,
-              "question": "How many years of experience does the candidate have?",
-              "options": [
-                "1 year",
-                "2 years",
-                "3 years",
-                "4 years"
-              ],
-              "answer": "3 years",
-              "explanation": "The candidate mentions her experience"
-            },
-            {
-              "id": 3,
-              "question": "What is the name of the company the candidate is applying for?",
-              "options": [
-                "Johnson & Co.",
-                "ABC Corporation",
-                "XYZ Inc.",
-                "PQR Ltd."
-              ],
-              "answer": "Johnson & Co.",
-              "explanation": "The company name is mentioned"
-            },
-            {
-              "id": 4,
-              "question": "What was the increase in sales from the candidate's previous campaign?",
-              "options": [
-                "10%",
-                "15%",
-                "20%",
-                "25%"
-              ],
-              "answer": "25%",
-              "explanation": "The increase is mentioned in the conversation"
-            },
-            {
-              "id": 5,
-              "question": "What was the budget for the candidate's previous campaign?",
-              "options": [
-                "5,000 dollars",
-                "10,000 dollars",
-                "15,000 dollars",
-                "20,000 dollars"
-              ],
-              "answer": "10,000 dollars",
-              "explanation": "The budget is mentioned"
-            },
-            {
-              "id": 6,
-              "question": "How many people were reached by the candidate's campaign?",
-              "options": [
-                "500,000",
-                "1 million",
-                "1.5 million",
-                "2 million"
-              ],
-              "answer": "1 million",
-              "explanation": "The reach is mentioned in the conversation"
-            },
-            {
-              "id": 7,
-              "question": "When is the company looking for the candidate to start?",
-              "options": [
-                "Within the next week",
-                "Within the next 2 weeks",
-                "Within the next month",
-                "Within the next 2 months"
-              ],
-              "answer": "Within the next 2 weeks",
-              "explanation": "The start date is mentioned"
-            },
-            {
-              "id": 8,
-              "question": "What skill is the company looking for in the candidate?",
-              "options": [
-                "Strong communication skills",
-                "Strong technical skills",
-                "Strong leadership skills",
-                "Strong problem-solving skills"
-              ],
-              "answer": "Strong communication skills",
-              "explanation": "The skill is mentioned in the conversation"
-            }
-          ]
-        },
-        {
-          "type": "conversation",
-          "title": "Booking a Restaurant",
-          "script": [
-            {
-              "speaker": "Customer",
-              "text": "I'd like to book a table for 4 people at 7:30 pm on Friday, please."
-            },
-            {
-              "speaker": "Restaurant Staff",
-              "text": "Certainly, we have a table available at that time. It will be 20 dollars per person for the buffet."
-            },
-            {
-              "speaker": "Customer",
-              "text": "That sounds great. Can I also book a cake for my friend's birthday? It's her 30th birthday."
-            },
-            {
-              "speaker": "Restaurant Staff",
-              "text": "We can arrange a cake for 50 dollars. And we'll also give you a 10% discount on the total bill if you pay by cash."
-            },
-            {
-              "speaker": "Customer",
-              "text": "That's wonderful, thank you. Can you confirm my booking?"
-            },
-            {
-              "speaker": "Restaurant Staff",
-              "text": "Yes, your booking is confirmed. We'll see you on Friday at 7:30 pm. The address is 123 Main Street, and our phone number is 555-1234."
-            }
-          ],
-          "questions": [
-            {
-              "id": 1,
-              "question": "What time has the customer booked the table for?",
-              "options": [
-                "6:30 pm",
-                "7:30 pm",
-                "8:30 pm",
-                "9:30 pm"
-              ],
-              "answer": "7:30 pm",
-              "explanation": "The time is mentioned in the conversation"
-            },
-            {
-              "id": 2,
-              "question": "How many people has the customer booked the table for?",
-              "options": [
-                "2 people",
-                "3 people",
-                "4 people",
-                "5 people"
-              ],
-              "answer": "4 people",
-              "explanation": "The number of people is mentioned"
-            },
-            {
-              "id": 3,
-              "question": "What is the price per person for the buffet?",
-              "options": [
-                "15 dollars",
-                "20 dollars",
-                "25 dollars",
-                "30 dollars"
-              ],
-              "answer": "20 dollars",
-              "explanation": "The price is mentioned in the conversation"
-            },
-            {
-              "id": 4,
-              "question": "What is the occasion for the booking?",
-              "options": [
-                "Wedding",
-                "Birthday",
-                "Anniversary",
-                "Graduation"
-              ],
-              "answer": "Birthday",
-              "explanation": "The occasion is mentioned"
-            },
-            {
-              "id": 5,
-              "question": "How old is the friend whose birthday it is?",
-              "options": [
-                "20 years old",
-                "25 years old",
-                "30 years old",
-                "35 years old"
-              ],
-              "answer": "30 years old",
-              "explanation": "The age is mentioned in the conversation"
-            },
-            {
-              "id": 6,
-              "question": "How much does the cake cost?",
-              "options": [
-                "40 dollars",
-                "50 dollars",
-                "60 dollars",
-                "70 dollars"
-              ],
-              "answer": "50 dollars",
-              "explanation": "The cost is mentioned"
-            },
-            {
-              "id": 7,
-              "question": "What discount will the customer receive if they pay by cash?",
-              "options": [
-                "5% discount",
-                "10% discount",
-                "15% discount",
-                "20% discount"
-              ],
-              "answer": "10% discount",
-              "explanation": "The discount is mentioned"
-            },
-            {
-              "id": 8,
-              "question": "What is the address of the restaurant?",
-              "options": [
-                "123 Main Street",
-                "456 Park Avenue",
-                "789 Oak Street",
-                "321 Maple Street"
-              ],
-              "answer": "123 Main Street",
-              "explanation": "The address is mentioned in the conversation"
-            }
-          ]
-        }
-      ],
+      "intermediate": [],
       "advanced": []
     },
     "story": {
@@ -720,87 +483,7 @@
   },
   "readingCache": {
     "basic": [],
-    "intermediate": [
-      {
-        "type": "reading",
-        "title": "The History of Coffee",
-        "content": "Coffee has a rich and diverse history that spans over 1,000 years. The earliest credible evidence of coffee drinking comes from the 15th century, in the Sufi shrines of Yemen. From there, coffee spread throughout the Arabian Peninsula, and by the 16th century, it had reached the rest of the Middle East, as well as Europe. The first coffeehouses were established in the Middle East, where they became important centers of social and intellectual activity. In Europe, coffeehouses became popular gathering places for artists, writers, and intellectuals, and were often associated with revolutionary and liberal ideas. The first coffeehouse in Europe was established in Venice in 1683, and soon coffeehouses were springing up all over the continent. As trade and colonization expanded, coffee became a major commodity, and its production and trade had a significant impact on the economies of many countries. The coffee plant was first cultivated in the Americas in the 18th century, and by the 19th century, Brazil had become the world's largest producer of coffee. Today, coffee is grown in over 70 countries, and is one of the most widely traded commodities in the world. The history of coffee is also closely tied to the history of slavery, as many coffee plantations in the Americas were worked by enslaved Africans. The abolition of slavery in the 19th century had a significant impact on the coffee industry, as many plantations were forced to adapt to new labor systems. The 20th century saw the rise of instant coffee, as well as the development of new coffee-making technologies, such as the espresso machine. Today, coffee is a major part of many cultures around the world, and is enjoyed in a wide variety of ways. From the traditional Turkish coffee to the modern-day latte, coffee has become an integral part of many people's daily lives. The history of coffee is a complex and fascinating story, and one that continues to evolve to this day. As the coffee industry continues to grow and change, it is likely that the history of coffee will remain an important and fascinating topic for many years to come.",
-        "questions": [
-          {
-            "id": 1,
-            "question": "Where is the earliest credible evidence of coffee drinking from?",
-            "options": [
-              "The Middle East",
-              "Europe",
-              "The Sufi shrines of Yemen",
-              "The Americas"
-            ],
-            "answer": "The Sufi shrines of Yemen",
-            "explanation": "The passage states that the earliest credible evidence of coffee drinking comes from the 15th century, in the Sufi shrines of Yemen."
-          },
-          {
-            "id": 2,
-            "question": "What were the first coffeehouses established in?",
-            "options": [
-              "The Middle East",
-              "Europe",
-              "The Americas",
-              "Africa"
-            ],
-            "answer": "The Middle East",
-            "explanation": "The passage states that the first coffeehouses were established in the Middle East, where they became important centers of social and intellectual activity."
-          },
-          {
-            "id": 3,
-            "question": "What was the first coffeehouse in Europe established in?",
-            "options": [
-              "London",
-              "Paris",
-              "Venice",
-              "Rome"
-            ],
-            "answer": "Venice",
-            "explanation": "The passage states that the first coffeehouse in Europe was established in Venice in 1683."
-          },
-          {
-            "id": 4,
-            "question": "What was the impact of the abolition of slavery on the coffee industry?",
-            "options": [
-              "It had no impact",
-              "It led to a decline in coffee production",
-              "It forced many plantations to adapt to new labor systems",
-              "It led to an increase in coffee consumption"
-            ],
-            "answer": "It forced many plantations to adapt to new labor systems",
-            "explanation": "The passage states that the abolition of slavery in the 19th century had a significant impact on the coffee industry, as many plantations were forced to adapt to new labor systems."
-          },
-          {
-            "id": 5,
-            "question": "What is one of the most widely traded commodities in the world?",
-            "options": [
-              "Coffee",
-              "Oil",
-              "Gold",
-              "Tea"
-            ],
-            "answer": "Coffee",
-            "explanation": "The passage states that coffee is one of the most widely traded commodities in the world."
-          },
-          {
-            "id": 6,
-            "question": "What is the history of coffee closely tied to?",
-            "options": [
-              "The history of slavery",
-              "The history of colonization",
-              "The history of trade",
-              "All of the above"
-            ],
-            "answer": "All of the above",
-            "explanation": "The passage states that the history of coffee is closely tied to the history of slavery, as many coffee plantations in the Americas were worked by enslaved Africans, and is also closely tied to the history of trade and colonization, as the production and trade of coffee had a significant impact on the economies of many countries."
-          }
-        ]
-      }
-    ],
+    "intermediate": [],
     "advanced": []
   }
 }
