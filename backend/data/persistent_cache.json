@@ -1,38 +1,6 @@
 {
   "topicCache": [
     {
-      "id": 4,
-      "text": "If you could travel anywhere in the world, where would you go and what would you hope to experience or achieve?"
-    },
-    {
-      "id": 5,
-      "text": "What are some common societal pressures that people face, and how can we work to mitigate their negative effects?"
-    },
-    {
-      "id": 6,
-      "text": "How do you think technology will continue to evolve in the next decade, and what implications might this have for humanity?"
-    },
-    {
-      "id": 7,
-      "text": "What does it mean to be a responsible global citizen, and what actions can we take to make a positive impact?"
-    },
-    {
-      "id": 8,
-      "text": "In what ways can learning a new language enrich our lives, and what challenges might we face in the process?"
-    },
-    {
-      "id": 9,
-      "text": "What are some key factors that contribute to a person's overall happiness, and how can we incorporate them into our daily lives?"
-    },
-    {
-      "id": 10,
-      "text": "How can we balance the need for economic growth with the importance of protecting the environment?"
-    },
-    {
-      "id": 11,
-      "text": "What are some of the most significant cultural differences you've encountered, and how have they influenced your perspective?"
-    },
-    {
       "id": 12,
       "text": "If you could go back in time and give advice to your younger self, what would it be and why?"
     },
@@ -221,10 +189,6 @@
       }
     ],
     "intermediate": [
-      {
-        "id": 5,
-        "text": "By next year, I will have been living in this city for five years."
-      },
       {
         "id": 6,
         "text": "The teacher asked the students to write a short essay about their summer vacation."
@@ -472,7 +436,248 @@
   "listeningCache": {
     "conversation": {
       "basic": [],
-      "intermediate": [],
+      "intermediate": [
+        {
+          "type": "conversation",
+          "title": "Discussing a Project",
+          "script": [
+            {
+              "speaker": "David",
+              "text": "Hi, have you started working on the project that is due on Friday at 5pm?"
+            },
+            {
+              "speaker": "Sarah",
+              "text": "Yes, I've written 500 words of the report and I've collected data from 20 customers, which shows that 75% of them are satisfied with our product."
+            },
+            {
+              "speaker": "David",
+              "text": "Great, I've created 5 graphs to illustrate the findings and I've also made a presentation that will last for 10 minutes."
+            },
+            {
+              "speaker": "Sarah",
+              "text": "That sounds good, and we should practice our presentation on Thursday at 2pm in Conference Room B."
+            }
+          ],
+          "questions": [
+            {
+              "id": 1,
+              "question": "What time is the project due?",
+              "options": [
+                "3pm",
+                "4pm",
+                "5pm",
+                "6pm"
+              ],
+              "answer": "C",
+              "explanation": "The due time is mentioned in the conversation"
+            },
+            {
+              "id": 2,
+              "question": "How many words of the report has Sarah written?",
+              "options": [
+                "300 words",
+                "400 words",
+                "500 words",
+                "600 words"
+              ],
+              "answer": "C",
+              "explanation": "The number of words is mentioned in the conversation"
+            },
+            {
+              "id": 3,
+              "question": "How many customers did Sarah collect data from?",
+              "options": [
+                "10 customers",
+                "15 customers",
+                "20 customers",
+                "25 customers"
+              ],
+              "answer": "C",
+              "explanation": "The number of customers is mentioned in the conversation"
+            },
+            {
+              "id": 4,
+              "question": "What percentage of customers are satisfied with the product?",
+              "options": [
+                "65%",
+                "70%",
+                "75%",
+                "80%"
+              ],
+              "answer": "C",
+              "explanation": "The percentage is mentioned in the conversation"
+            },
+            {
+              "id": 5,
+              "question": "How many graphs did David create?",
+              "options": [
+                "3 graphs",
+                "4 graphs",
+                "5 graphs",
+                "6 graphs"
+              ],
+              "answer": "C",
+              "explanation": "The number of graphs is mentioned in the conversation"
+            },
+            {
+              "id": 6,
+              "question": "How long will the presentation last?",
+              "options": [
+                "5 minutes",
+                "8 minutes",
+                "10 minutes",
+                "12 minutes"
+              ],
+              "answer": "C",
+              "explanation": "The presentation time is mentioned in the conversation"
+            },
+            {
+              "id": 7,
+              "question": "Where will they practice their presentation?",
+              "options": [
+                "Conference Room A",
+                "Conference Room B",
+                "Conference Room C",
+                "Conference Room D"
+              ],
+              "answer": "B",
+              "explanation": "The location is mentioned in the conversation"
+            },
+            {
+              "id": 8,
+              "question": "At what time will they practice their presentation?",
+              "options": [
+                "1pm",
+                "2pm",
+                "3pm",
+                "4pm"
+              ],
+              "answer": "B",
+              "explanation": "The practice time is mentioned in the conversation"
+            }
+          ]
+        },
+        {
+          "type": "conversation",
+          "title": "Making Plans for the Weekend",
+          "script": [
+            {
+              "speaker": "Michael",
+              "text": "Hey, do you want to go to the beach on Saturday?"
+            },
+            {
+              "speaker": "Jessica",
+              "text": "Yes, that sounds fun, but we should leave early, around 7am, to avoid the traffic."
+            },
+            {
+              "speaker": "Michael",
+              "text": "Okay, and we can take my car, which has a full tank of gas, and we'll need to pay 10 dollars for parking."
+            },
+            {
+              "speaker": "Jessica",
+              "text": "Great, and we should bring a picnic lunch, which will cost around 15 dollars per person, and we can eat at 12pm."
+            }
+          ],
+          "questions": [
+            {
+              "id": 1,
+              "question": "What day are Michael and Jessica going to the beach?",
+              "options": [
+                "Friday",
+                "Saturday",
+                "Sunday",
+                "Monday"
+              ],
+              "answer": "B",
+              "explanation": "The day is mentioned in the conversation"
+            },
+            {
+              "id": 2,
+              "question": "What time are they leaving for the beach?",
+              "options": [
+                "6am",
+                "7am",
+                "8am",
+                "9am"
+              ],
+              "answer": "B",
+              "explanation": "The leaving time is mentioned in the conversation"
+            },
+            {
+              "id": 3,
+              "question": "How much does the parking cost?",
+              "options": [
+                "5 dollars",
+                "8 dollars",
+                "10 dollars",
+                "12 dollars"
+              ],
+              "answer": "C",
+              "explanation": "The parking cost is mentioned in the conversation"
+            },
+            {
+              "id": 4,
+              "question": "What time will they eat lunch?",
+              "options": [
+                "11am",
+                "12pm",
+                "1pm",
+                "2pm"
+              ],
+              "answer": "B",
+              "explanation": "The lunch time is mentioned in the conversation"
+            },
+            {
+              "id": 5,
+              "question": "How much will the picnic lunch cost per person?",
+              "options": [
+                "10 dollars",
+                "12 dollars",
+                "15 dollars",
+                "18 dollars"
+              ],
+              "answer": "C",
+              "explanation": "The lunch cost is mentioned in the conversation"
+            },
+            {
+              "id": 6,
+              "question": "What will they use to go to the beach?",
+              "options": [
+                "Jessica's car",
+                "Michael's car",
+                "The bus",
+                "A taxi"
+              ],
+              "answer": "B",
+              "explanation": "The mode of transport is mentioned in the conversation"
+            },
+            {
+              "id": 7,
+              "question": "How much gas does Michael's car have?",
+              "options": [
+                "A quarter of a tank",
+                "Half a tank",
+                "Three quarters of a tank",
+                "A full tank"
+              ],
+              "answer": "D",
+              "explanation": "The gas level is mentioned in the conversation"
+            },
+            {
+              "id": 8,
+              "question": "Who suggested leaving early to avoid traffic?",
+              "options": [
+                "Michael",
+                "Jessica",
+                "Both of them",
+                "Neither of them"
+              ],
+              "answer": "B",
+              "explanation": "The suggestion is mentioned in the conversation"
+            }
+          ]
+        }
+      ],
       "advanced": []
     },
     "story": {
@@ -483,7 +688,166 @@
   },
   "readingCache": {
     "basic": [],
-    "intermediate": [],
+    "intermediate": [
+      {
+        "type": "reading",
+        "title": "The History of the Taj Mahal",
+        "content": "The Taj Mahal is one of the most beautiful and iconic buildings in the world, located in Agra, India. It was built by Mughal Emperor Shah Jahan in memory of his beloved wife, Mumtaz Mahal, who died in 1631. The construction of the Taj Mahal began in 1632 and took over 22 years to complete, with a workforce of over 20,000 laborers and artisans. The Taj Mahal is a masterpiece of Mughal architecture, which blends Indian, Persian, and Islamic styles. The building is made of white marble and features intricate inlays of precious stones, including jasper, jade, and turquoise. The Taj Mahal is not just a beautiful building, but also a symbol of love and devotion. Shah Jahan was deeply in love with his wife, and her death was a devastating blow to him. He built the Taj Mahal as a tribute to her memory, and it is said that he was buried alongside her in the mausoleum after his death. The Taj Mahal has a rich history, and it has been the subject of many myths and legends over the years. One of the most famous myths is that the building changes color depending on the time of day and the weather. While this is not entirely true, the Taj Mahal does appear to change color due to the way the light reflects off the marble. The Taj Mahal is also a testament to the engineering and architectural skills of the Mughal Empire. The building is designed to withstand earthquakes and other natural disasters, and it has survived for over 400 years with minimal damage. Today, the Taj Mahal is one of the most popular tourist destinations in the world, attracting millions of visitors each year. It is a UNESCO World Heritage Site and is considered one of the Seven Wonders of the Modern World. The Taj Mahal is a must-see destination for anyone interested in history, architecture, and culture. The building is a reminder of the beauty and elegance of Mughal architecture, and it continues to inspire wonder and awe in all who see it. The Taj Mahal is a symbol of love, devotion, and beauty, and it will continue to be a source of inspiration for generations to come.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Who built the Taj Mahal?",
+            "options": [
+              "Shah Jahan",
+              "Mumtaz Mahal",
+              "Akbar the Great",
+              "Babur"
+            ],
+            "answer": "Shah Jahan",
+            "explanation": "Shah Jahan built the Taj Mahal in memory of his beloved wife, Mumtaz Mahal."
+          },
+          {
+            "id": 2,
+            "question": "What is the main material used to build the Taj Mahal?",
+            "options": [
+              "White marble",
+              "Red sandstone",
+              "Black granite",
+              "Brown limestone"
+            ],
+            "answer": "White marble",
+            "explanation": "The Taj Mahal is made of white marble."
+          },
+          {
+            "id": 3,
+            "question": "How many years did it take to complete the construction of the Taj Mahal?",
+            "options": [
+              "10 years",
+              "15 years",
+              "20 years",
+              "22 years"
+            ],
+            "answer": "22 years",
+            "explanation": "The construction of the Taj Mahal took over 22 years to complete."
+          },
+          {
+            "id": 4,
+            "question": "What is the name of the emperor who built the Taj Mahal?",
+            "options": [
+              "Shah Jahan",
+              "Akbar the Great",
+              "Babur",
+              "Humayun"
+            ],
+            "answer": "Shah Jahan",
+            "explanation": "Shah Jahan was the Mughal Emperor who built the Taj Mahal."
+          },
+          {
+            "id": 5,
+            "question": "What is the Taj Mahal a symbol of?",
+            "options": [
+              "Love and devotion",
+              "War and conquest",
+              "Peace and harmony",
+              "Power and wealth"
+            ],
+            "answer": "Love and devotion",
+            "explanation": "The Taj Mahal is a symbol of love and devotion."
+          },
+          {
+            "id": 6,
+            "question": "Why is the Taj Mahal a UNESCO World Heritage Site?",
+            "options": [
+              "Because of its historical significance",
+              "Because of its architectural beauty",
+              "Because of its cultural importance",
+              "All of the above"
+            ],
+            "answer": "All of the above",
+            "explanation": "The Taj Mahal is a UNESCO World Heritage Site because of its historical significance, architectural beauty, and cultural importance."
+          }
+        ]
+      },
+      {
+        "type": "reading",
+        "title": "The Future of Space Exploration",
+        "content": "Space exploration has come a long way since the first humans walked on the moon in 1969. Today, we have a permanent human settlement on the International Space Station, and private companies like SpaceX and Blue Origin are leading the charge in developing reusable rockets and spacecraft. But what does the future of space exploration hold? One of the most exciting areas of research is in the field of exoplanets, which are planets that orbit stars other than the sun. Scientists have discovered thousands of exoplanets in recent years, and many of these planets are believed to be located in the habitable zones of their respective stars, where conditions are suitable for life as we know it. The search for life beyond Earth is a major area of research, with scientists using a variety of methods to search for biosignatures, such as the presence of oxygen or methane in the atmospheres of exoplanets. Another area of research is in the development of new propulsion technologies, such as nuclear propulsion and advanced ion engines, which could potentially allow for faster and more efficient travel to other planets. In addition, there are plans to return humans to the moon by 2024 and to establish a permanent human settlement on Mars in the coming decades. The future of space exploration is also likely to be shaped by the growing role of private companies, which are increasingly playing a major role in the development of new spacecraft and technologies. However, there are also many challenges that must be overcome, such as the effects of radiation on the human body and the psychological effects of long-term space travel. Despite these challenges, the future of space exploration is looking bright, with many exciting developments on the horizon. As we continue to push the boundaries of what is possible in space, we may uncover new and exciting discoveries that will help us to better understand the universe and our place within it. The possibility of finding life beyond Earth is a tantalizing one, and it is an area of research that is likely to continue to captivate scientists and the public alike for many years to come. The search for life beyond Earth is a complex and challenging task, but it is also a highly rewarding one, with the potential to greatly expand our understanding of the universe and our place within it.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "What is one of the most exciting areas of research in space exploration?",
+            "options": [
+              "The search for life on Mars",
+              "The development of new propulsion technologies",
+              "The study of exoplanets",
+              "The search for dark matter"
+            ],
+            "answer": "The study of exoplanets",
+            "explanation": "The study of exoplanets is a major area of research, with scientists searching for planets that are located in the habitable zones of their respective stars."
+          },
+          {
+            "id": 2,
+            "question": "What is the name of the company that is leading the charge in developing reusable rockets?",
+            "options": [
+              "SpaceX",
+              "Blue Origin",
+              "NASA",
+              "European Space Agency"
+            ],
+            "answer": "SpaceX",
+            "explanation": "SpaceX is a private company that is leading the charge in developing reusable rockets."
+          },
+          {
+            "id": 3,
+            "question": "What is the main challenge that must be overcome in order to establish a permanent human settlement on Mars?",
+            "options": [
+              "The effects of radiation on the human body",
+              "The psychological effects of long-term space travel",
+              "The lack of funding for space exploration",
+              "The technological limitations of current spacecraft"
+            ],
+            "answer": "The effects of radiation on the human body",
+            "explanation": "The effects of radiation on the human body is one of the main challenges that must be overcome in order to establish a permanent human settlement on Mars."
+          },
+          {
+            "id": 4,
+            "question": "What is the potential discovery that could greatly expand our understanding of the universe?",
+            "options": [
+              "The discovery of dark matter",
+              "The discovery of dark energy",
+              "The discovery of life beyond Earth",
+              "The discovery of a new planet in our solar system"
+            ],
+            "answer": "The discovery of life beyond Earth",
+            "explanation": "The discovery of life beyond Earth is a potential discovery that could greatly expand our understanding of the universe."
+          },
+          {
+            "id": 5,
+            "question": "What is the role of private companies in the future of space exploration?",
+            "options": [
+              "They will play a minor role",
+              "They will play a major role",
+              "They will have no role",
+              "They will be the only players"
+            ],
+            "answer": "They will play a major role",
+            "explanation": "Private companies are increasingly playing a major role in the development of new spacecraft and technologies."
+          },
+          {
+            "id": 6,
+            "question": "What is the plan for human space travel in the coming decades?",
+            "options": [
+              "To return humans to the moon by 2024 and to establish a permanent human settlement on Mars",
+              "To establish a permanent human settlement on the moon and to return humans to Mars",
+              "To send humans to Mars by 2024 and to establish a permanent human settlement on the moon",
+              "To send humans to the moon and to establish a permanent human settlement on Mars by 2024"
+            ],
+            "answer": "To return humans to the moon by 2024 and to establish a permanent human settlement on Mars",
+            "explanation": "The plan is to return humans to the moon by 2024 and to establish a permanent human settlement on Mars in the coming decades."
+          }
+        ]
+      }
+    ],
     "advanced": []
   }
 }
